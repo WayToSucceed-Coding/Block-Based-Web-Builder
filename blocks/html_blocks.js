@@ -921,7 +921,7 @@ Blockly.Blocks['plain_text'] = {
 
     this.appendDummyInput()
       .appendField('')
-      .appendField(new Blockly.FieldTextInput('data'), 'CONTENT') // Direct content text input
+      .appendField(new Blockly.FieldTextInput('text'), 'CONTENT') // Direct content text input
       .appendField('');
 
     this.setPreviousStatement(true)
