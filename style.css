@@ -122,11 +122,10 @@ border: 1px solid #616467;
 }
 
 .help-icon{
-  width: 20px; /* Adjust icon size */
+  width: 30px; /* Adjust icon size */
   height: auto;
   margin-bottom: 3px; /* Spacing between icon and text */
 }
-
 
 
 /* Panel styling */
@@ -293,16 +292,12 @@ border: 1px solid #616467;
 }
 #showCodeButton.active,
 #showPreviewButton.active{
-
-  /* background-image: linear-gradient(-180deg, #00D775, #00BD68); */
   background-color: #a3bc00 !important;
   border-radius: 5px;
   box-shadow: rgba(0, 0, 0, 0.1) 0 2px 4px;
   color: #FFFFFF;
   cursor: pointer;
   display: inline-block;
-  /* height: 44px; */
-  /* line-height: 44px; */
   outline: 0;
   overflow: hidden;
   padding: 0 20px;
@@ -318,9 +313,6 @@ border: 1px solid #616467;
   z-index: 9;
   border: 0;
 }
-
-
-
 
 #previewSection iframe {
   width: 100%;
@@ -476,39 +468,41 @@ height: auto;
 }
 /*Image for HTML Category*/
 #blockly-1 {
-  background-image: url('./assets/categories/1.png') !important; 
+  background-image: url('./assets/categories/html.png') !important; 
   background-repeat: no-repeat;
   background-size: contain;
  }
+/*Image for Tags Category*/
+#blockly-2 {
+  background-image: url('./assets/categories/tags.png') !important; 
+  background-size: contain;
+  background-repeat: no-repeat;
+  align-self: center !important;
+}
+/*Image for Attributes Category*/
+#blockly-3 {
+  background-image: url('./assets/categories/attributes.png') !important; 
+  background-size: contain;
+  background-repeat: no-repeat;
+  align-self: center !important;
+}
 /*Image for CSS Category*/
 #blockly-l {
-  background-image: url('./assets/categories/3.png') !important; 
+  background-image: url('./assets/categories/css.png') !important; 
   background-repeat: no-repeat;
   background-size: contain;
 }
 /*Image for JavaScript Category*/
 #blockly-u {
-  background-image: url('./assets/categories/4.png') !important; 
+  background-image: url('./assets/categories/js.png') !important; 
   background-size: contain;
   background-repeat: no-repeat;
 }
-/*Image for Tags Category*/
-#blockly-2 {
-  background-image: url('./assets/categories/1.png') !important; 
-  background-size: contain;
-  background-repeat: no-repeat;
-  align-self: center !important;
-}
+
 #blockly-2.blocklyTreeRow{
   margin-left: 50px !important;
 }
-/*Image for Attributes Category*/
-#blockly-3 {
-  background-image: url('./assets/categories/2.png') !important; 
-  background-size: contain;
-  background-repeat: no-repeat;
-  align-self: center !important;
-}
+
 #blockly-3.blocklyTreeRow{
   margin-left: 50px !important;
 }
@@ -516,6 +510,11 @@ height: auto;
 .blocklyTreeIcon{
   display: none !important;
 }
+/* HTML Category - Selected */
+.blocklyTreeRow.blocklyTreeSelected#blockly-1 {
+  background-color: #0ACDFF !important 
+}
+
 /* Tags Category - Selected */
 .blocklyTreeRow.blocklyTreeSelected#blockly-2 {
   background-color: #0ACDFF !important 
@@ -562,11 +561,8 @@ height: auto;
 .blocklyTreeLabel{
   color: black;
 }
-
 /* General styling for the form */
-#addFileForm {
-  
- 
+#addFileForm { 
   padding-top: 2rem; 
   max-width: 300px;
   margin: auto;
