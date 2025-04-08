@@ -25,81 +25,6 @@ function updateFileLabelBlock(fileName) {
 }
  var isFlyoutOpen;
 
-
-
-// // Keep the toolbox open
-// workspace.getFlyout().autoClose = false;
-
-// workspace.addChangeListener((event) => {
-//     console.log(event)
-//     if (event.type === "delete") {
-//         const block = workspace.getBlockById(event.blockId);
-//         const isOpen = workspace.getFlyout().isVisible();
-//         if (event.oldJson.x < 20 || isOpen) {
-//             //
-//              block.moveTo(event.oldJson.x, event.oldJson.y);
-//         }
-//         else {
-//             workspace.undo()
-
-//         }
-
-
-
-//     }
-// });
-
-// Define the coordinates for the custom delete region (left side of workspace)
-// const deleteRegionWidth = 100; // Width of the delete region when the toolbox is closed
-// const deleteRegionLeftBoundary = 0;
-// const deleteRegionRightBoundary = deleteRegionWidth;
-
-// // Check if a block should be deleted based on its position
-// function shouldDeleteBlock(block) {
-
-//     const blockPosition = block.getBoundingRectangle();
-//     const flyoutRect = workspace.getFlyout().getClientRect();
-
-//     // If flyout is visible, delete if block is dragged into it
-//     if (workspace.getFlyout().isVisible()) {
-
-
-//       return isBlockInRegion(blockPosition, flyoutRect);
-//     } 
-//     // If flyout is not visible, delete if block is in the custom delete region
-//     return (
-//       blockPosition.left < deleteRegionWidth
-//     );
-//   }
-
-// // Helper function to check if block is within a specific region
-// function isBlockInRegion(blockPosition, region) {
-
-//     return (
-//       blockPosition.top >= region.top &&
-//       blockPosition.bottom <= region.bottom &&
-//       blockPosition.left >= region.left &&
-//       blockPosition.right <= region.right
-//     );
-//   }
-
-//   // Listen for drag events and handle deletion
-//   workspace.addChangeListener(function (event) {
-
-//     if (event.type === "drag" && !event.isStart) {
-
-//       const block = workspace.getBlockById(event.blockId);
-//     //   block.dispose(false)
-//       if (block && shouldDeleteBlock(block)) {
-
-//         block.dispose(false); // Dispose of block without triggering another delete event
-//       }
-//       else{
-//         // block.dispose(true); 
-//       }
-//     }
-//   });
-
 // Data structure to hold user-created files
 var files = [];
 var currentFileIndex = -1;
@@ -117,7 +42,6 @@ function addFile(name, type) {
 
     // Initialize file content based on type
     var initialBlocks = '';
-
 
     // Create file object
     var fileObj = {
@@ -288,6 +212,7 @@ function generateAllCode() {
         var code = generateCodeForFile(file);
         if (file.type === 'html') {
             allCode.html[`${file.name}.${file.type}`] = code;
+
         } else if (file.type === 'css') {
             allCode.css += code + '\n';
         } else if (file.type === 'js') {
@@ -326,7 +251,6 @@ function generateCodeForFile(file) {
     return code;
 }
 //Function to generate HTML from blocks
-
 function generateHTMLFromBlocks() {
     if (currentFileIndex === -1) return; // No file selected
 
@@ -425,7 +349,7 @@ function updateLivePreview() {
     </body>
     </html>`;
 
-    // console.log("Final HTML for preview:", fullHTML);
+    //console.log("Final HTML for preview:", fullHTML);
 
     // Update the Live Preview iframe's srcdoc
     var iframe = document.getElementById('preview');

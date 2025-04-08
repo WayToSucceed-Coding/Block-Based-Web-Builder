@@ -377,121 +377,143 @@
           <block type="css_border_collapse"></block>
         </category>
       </category>
+      
+      <category name="JavaScript" id="JavaScript">
 
-      <category name="JavaScript">
-        <block type="js_alert">
-          <value name="MESSAGE">
-            <shadow type="text">
-              <field name="TEXT">Hello, World!</field>
-            </shadow>
-          </value>
-        </block>
-        <block type="js_console_log">
-          <value name="TEXT">
-            <shadow type="text">
-              <field name="TEXT">Debugging message</field>
-            </shadow>
-          </value>
-        </block>
-        <block type="js_function">
-          <field name="NAME">myFunction</field>
-          <statement name="DO">
-            <block type="js_console_log">
-              <value name="TEXT">
-                <shadow type="text">
-                  <field name="TEXT">Function executed!</field>
-                </shadow>
-              </value>
-            </block>
-          </statement>
-        </block>
-
-        <!-- Newly Added Blocks -->
-        <block type="js_variable_declare">
-          <field name="VAR">myVar</field>
-          <value name="VALUE">
-            <shadow type="math_number">
-              <field name="NUM">10</field>
-            </shadow>
-          </value>
-        </block>
-
-        <block type="js_event_listenerDOMContentLoaded">
-          <statement name="DO">
-            <block type="js_console_log">
-              <value name="TEXT">
-                <shadow type="text">
-                  <field name="TEXT">DOM is ready!</field>
-                </shadow>
-              </value>
-            </block>
-          </statement>
-        </block>
-
-        <block type="js_event_listener">
-          <field name="EVENT">click</field>
-          <value name="ELEMENT">
-            <shadow type="text">
-              <field name="TEXT">document.getElementById('myButton')</field>
-            </shadow>
-          </value>
-          <statement name="DO">
-            <block type="js_alert">
-              <value name="MESSAGE">
-                <shadow type="text">
-                  <field name="TEXT">Button clicked!</field>
-                </shadow>
-              </value>
-            </block>
-          </statement>
-        </block>
-
-        <block type="js_if_else">
-          <value name="CONDITION">
-            <shadow type="logic_boolean">
-              <field name="BOOL">TRUE</field>
-            </shadow>
-          </value>
-          <statement name="DO">
-            <block type="js_console_log">
-              <value name="TEXT">
-                <shadow type="text">
-                  <field name="TEXT">Condition is true!</field>
-                </shadow>
-              </value>
-            </block>
-          </statement>
-          <statement name="ELSE">
-            <block type="js_console_log">
-              <value name="TEXT">
-                <shadow type="text">
-                  <field name="TEXT">Condition is false!</field>
-                </shadow>
-              </value>
-            </block>
-          </statement>
-        </block>
-        <block type="number_input"></block>
-        <block type="js_while_loop"></block>
-        <block type="js_function_call"></block>
-        <block type="js_arithmetic"></block>
-        <block type="js_logical"></block>
-        <block type="js_compare"></block>
-        <block type="js_return"></block>
-        <block type="js_set_timeout"></block>
-        <block type="js_set_interval"></block>
-        <block type="js_array"></block>
-        <block type="js_array_access"></block>
-        <block type="js_array_push"></block>
-        <block type="js_switch"></block>
-        <block type="js_break"></block>
-        <block type="js_case"></block>
-        <block type="js_array_length"></block>
-        <block type="js_array_map"></block>
-        <block type="js_array_filter"></block>
-        <block type="js_json_parse"></block>
-        <block type="js_json_stringify"></block>
+        <!-- 1. Basic Output & Debugging -->
+        <category name="Basics" colour="#FFB400" id="JS_Basics">
+          <block type="js_alert"></block>
+          <block type="js_console_log"></block>
+        </category>
+      
+        <!-- 2. Variables & Constants -->
+        <category name="Variables" colour="#F26B38" id="JS_Variables">
+          <block type="js_variable_declare"></block>
+          <block type="js_const_declare"></block>
+          <block type="js_let_declare"></block>
+        </category>
+      
+        <!-- 3. Operators -->
+        <category name="Operators" colour="#D7263D" id="JS_Operators">
+          <block type="js_arithmetic"></block>
+          <block type="js_logical"></block>
+          <block type="js_compare"></block>
+        </category>
+      
+        <!-- 4. Control Flow -->
+        <category name="Control Flow" colour="#3E92CC" id="JS_ControlFlow">
+          <block type="js_if_else"></block>
+          <block type="js_switch"></block>
+          <block type="js_case"></block>
+          <block type="js_break"></block>
+          <block type="js_continue"></block>
+        </category>
+      
+        <!-- 5. Loops -->
+        <category name="Loops" colour="#1F7A8C" id="JS_Loops">
+          <block type="js_while_loop"></block>
+          <block type="js_for_loop"></block>
+          <block type="js_for_of_loop"></block>
+          <block type="js_for_in_loop"></block>
+        </category>
+      
+        <!-- 6. Functions -->
+        <category name="Functions" colour="#2EC4B6" id="JS_Functions">
+          <block type="js_function"></block>
+          <block type="js_arrow_function"></block>
+          <block type="js_function_call"></block>
+          <block type="js_return"></block>
+        </category>
+      
+        <!-- 7. Events -->
+        <category name="Events" colour="#7C83FD" id="JS_Events">
+          <block type="js_event_listenerDOMContentLoaded"></block>
+          <block type="js_event_listener"></block>
+          <block type="js_remove_event_listener"></block>
+        </category>
+      
+        <!-- 8. Timing -->
+        <category name="Timing" colour="#FF7F11" id="JS_Timing">
+          <block type="js_set_timeout"></block>
+          <block type="js_set_interval"></block>
+          <block type="js_clear_timeout"></block>
+          <block type="js_clear_interval"></block>
+        </category>
+      
+        <!-- 9. Arrays -->
+        <category name="Arrays" colour="#9C27B0" id="JS_Arrays">
+          <block type="js_array"></block>
+          <block type="js_array_access"></block>
+          <block type="js_array_length"></block>
+          <block type="js_array_push"></block>
+          <block type="js_array_pop"></block>
+          <block type="js_array_shift"></block>
+          <block type="js_array_unshift"></block>
+          <block type="js_array_map"></block>
+          <block type="js_array_filter"></block>
+        </category>
+      
+        <!-- 10. Objects -->
+        <category name="Objects" colour="#8BC34A" id="JS_Objects">
+          <block type="js_object_create"></block>
+          <block type="js_object_access"></block>
+          <block type="js_object_assign"></block>
+          <block type="js_object_keys"></block>
+          <block type="js_object_values"></block>
+        </category>
+      
+        <!-- 11. JSON -->
+        <category name="JSON" colour="#4CAF50" id="JS_JSON">
+          <block type="js_json_parse"></block>
+          <block type="js_json_stringify"></block>
+        </category>
+      
+        <!-- 12. DOM Manipulation -->
+        <category name="DOM" colour="#607D8B" id="JS_DOM">
+          <block type="js_get_element_by_id"></block>
+          <block type="js_query_selector"></block>
+          <block type="js_set_innerhtml"></block>
+          <block type="js_set_attribute"></block>
+          <block type="js_add_class"></block>
+          <block type="js_remove_class"></block>
+          <block type="js_toggle_class"></block>
+        </category>
+      
+        <!-- 13. Error Handling -->
+        <category name="Error Handling" colour="#E53935" id="JS_Errors">
+          <block type="js_try_catch"></block>
+          <block type="js_throw_error"></block>
+        </category>
+      
+        <!-- 14. Asynchronous -->
+        <category name="Async Programming" colour="#00ACC1" id="JS_Async">
+          <block type="js_promise"></block>
+          <block type="js_then"></block>
+          <block type="js_catch"></block>
+          <block type="js_async_function"></block>
+          <block type="js_await"></block>
+        </category>
+      
+        <!-- 15. Type Conversion -->
+        <category name="Type Conversion" colour="#6A1B9A" id="JS_Types">
+          <block type="js_typeof"></block>
+          <block type="js_parse_int"></block>
+          <block type="js_parse_float"></block>
+          <block type="js_to_string"></block>
+        </category>
+      
+        <!-- 16. Math Utilities -->
+        <category name="Math" colour="#9E9D24" id="JS_Math">
+          <block type="js_math_random"></block>
+          <block type="js_math_floor"></block>
+          <block type="js_math_ceil"></block>
+          <block type="js_math_round"></block>
+          <block type="js_math_pow"></block>
+        </category>
+      
       </category>
+      
     </xml>
+    <button width="500" height="500">hello</button>
   </body>
 </html>
