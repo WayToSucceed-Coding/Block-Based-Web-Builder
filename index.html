@@ -18,12 +18,17 @@
     <!-- Include JSZip for exporting as ZIP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.0/jszip.min.js"></script>
 
+    <!-- Include Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+
     <!-- Include the main app script -->
     <script src="app.js" defer></script>
 
     <!-- Include custom styles -->
     <link rel="stylesheet" href="style.css" />
-    
   </head>
 
   <body>
@@ -38,7 +43,7 @@
       <h1></h1>
      
     </header> -->
-    
+
     <header class="header">
       <img src="./assets/logo/Logo.png" alt="Logo" class="logo" />
       <img src="./assets/logo/header.png" alt="Header" class="header-image" />
@@ -47,28 +52,38 @@
     <div id="container">
       <!-- Sidebar with toggle buttons -->
       <div id="sidebar">
-
-         <button id="fileManagerButton">
+        <button id="fileManagerButton">
           <div class="files-button">
-            <img src="./assets/options/files.png" alt="Files Icon" class="files-icon">
+            <img
+              src="./assets/options/files.png"
+              alt="Files Icon"
+              class="files-icon"
+            />
             <span class="files-text">Files</span>
-        </div>
+          </div>
         </button>
 
         <button id="toolsButton" class="active">
           <div class="tools-button">
-            <img src="./assets/options/toolbox.png" alt="Files Icon" class="tools-icon">
+            <img
+              src="./assets/options/toolbox.png"
+              alt="Files Icon"
+              class="tools-icon"
+            />
             <span class="files-text">Tools</span>
-        </div>
+          </div>
         </button>
 
         <button id="helpButton">
           <div class="help-button">
-            <img src="./assets/options/help.png" alt="Help Icon" class="help-icon">
+            <img
+              src="./assets/options/help.png"
+              alt="Help Icon"
+              class="help-icon"
+            />
             <span class="files-text">Guide</span>
           </div>
         </button>
-       
       </div>
 
       <!-- File Manager (initially hidden) -->
@@ -93,23 +108,20 @@
           <button type="submit">Add</button>
         </form>
       </div>
-      
+
       <!-- Modal Structure -->
-<div id="confirmationModal" class="modal">
-  <div class="modal-content">
-    <p>Are you sure you want to download the entire project?</p>
-    <button id="yesButton" class ='modal-button'>Yes</button>
-    <button id="noButton" class="modal-button">No</button>
-  </div>
-</div>
+      <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+          <p>Are you sure you want to download the entire project?</p>
+          <button id="yesButton" class="modal-button">Yes</button>
+          <button id="noButton" class="modal-button">No</button>
+        </div>
+      </div>
 
       <!-- Blockly coding area (middle panel) -->
-      <div id="blocklyArea"> 
-       
+      <div id="blocklyArea">
         <div id="blocklyDiv"></div>
-       
       </div>
-      
 
       <!-- Resizer between coding area and right pane -->
       <div id="resizer"></div>
@@ -127,9 +139,14 @@
           </button>
           <button id="exportButton" class="toggle-btn">
             <!-- <img src="./assets/options/export.png" class="files-icon"> -->
-            <img src="./assets/options/export.png" width="18px" style="padding-right: 6px;">
+            <img
+              src="./assets/options/export.png"
+              width="18px"
+              style="padding-right: 6px"
+            />
             Export Project
           </button>
+          
         </div>
 
         <!-- Generated Code Section -->
@@ -143,7 +160,11 @@
           <h2>Live Preview</h2>
           <button id="popOut" class="toggle-btn">
             <!-- <img src="./assets/options/pop-out.png" width="35px"> -->
-            <img src="./assets/options/new-tab.png" width="18px" style="padding-right: 6px;">
+            <img
+              src="./assets/options/new-tab.png"
+              width="18px"
+              style="padding-right: 6px"
+            />
 
             Open Output in New Window
           </button>
@@ -154,11 +175,8 @@
 
     <!-- Toolbox XML -->
     <xml id="toolbox" style="display: none">
-     
-      <category name="HTML" id="HTML" >
-
+      <category name="HTML" id="HTML">
         <category name="Tags" id="HTML">
-        
           <category name="Document Structure" colour="#0ACDFF" id="Tags">
             <label text="Document Structure"></label>
             <block type="html_doctype"></block>
@@ -166,21 +184,21 @@
             <block type="html_head"></block>
             <block type="html_body"></block>
           </category>
-  
+
           <category name="Metadata and links" colour="#0ACDFF" id="Tags">
             <label text="Metadata and links"></label>
             <block type="html_style"></block>
             <block type="html_link"></block>
             <block type="html_script"></block>
           </category>
-  
+
           <category name="Text" colour="#0ACDFF" id="Tags">
             <label text="Text"></label>
             <block type="plain_text"></block>
             <block type="html_heading"></block>
             <block type="html_p"></block>
           </category>
-  
+
           <category name="Text Formatting" colour="#0ACDFF" id="Tags">
             <label text="Text Formatting"></label>
             <block type="strong"></block>
@@ -190,13 +208,13 @@
             <block type="underline"></block>
             <block type="span"></block>
           </category>
-  
+
           <category name="Line Breaks and Dividers" colour="#0ACDFF" id="Tags">
             <label text="Line Breaks and Dividers"></label>
             <block type="html_br"></block>
             <block type="html_hr"></block>
           </category>
-  
+
           <category name="Media" colour="#0ACDFF" id="Tags">
             <label text="Media"></label>
             <block type="html_img"></block>
@@ -205,23 +223,23 @@
             <block type="html_source"></block>
             <block type="html_iframe"></block>
           </category>
-       
+
           <category name="Interactive Elements" colour="#0ACDFF" id="Tags">
             <label text="Interactive Elements"></label>
             <block type="html_button"></block>
             <block type="html_a"></block>
           </category>
-  
+
           <category name="Containers and Layout" colour="#0ACDFF" id="Tags">
             <label text="Containers and Layout"></label>
             <block type="html_div"></block>
             <block type="html_header"></block>
             <block type="html_footer"></block>
-            <block type="html_nav"></block> 
+            <block type="html_nav"></block>
             <block type="html_article"></block>
             <block type="html_aside"></block>
           </category>
-  
+
           <category name="Form" colour="#0ACDFF" id="Tags">
             <label text="Form"></label>
             <block type="html_form"></block>
@@ -232,13 +250,13 @@
             <block type="html_datalist"></block>
             <block type="html_option"></block>
           </category>
-  
+
           <category name="List" colour="#0ACDFF" id="Tags">
             <block type="html_ul"></block>
             <block type="html_ol"></block>
             <block type="html_li"></block>
-          </category>  
-  
+          </category>
+
           <category name="Table" colour="#0ACDFF" id="Tags">
             <block type="html_table"></block>
             <block type="html_caption"></block>
@@ -260,7 +278,7 @@
             <block type="html_attribute_border"></block>
             <block type="html_attribute_lang"></block>
           </category>
-  
+
           <category name="Content" colour="#BF1363" id="Attributes">
             <label text="Content"></label>
             <block type="html_attribute_placeholder"></block>
@@ -269,12 +287,12 @@
             <block type="html_attribute_src"></block>
             <block type="html_attribute_type_form"></block>
           </category>
-  
+
           <category name="Events" colour="#BF1363" id="Attributes">
             <label text="Events"></label>
             <block type="html_attribute_onclick"></block>
           </category>
-  
+
           <category name="Input" colour="#BF1363" id="Attributes">
             <label text="Input"></label>
             <block type="html_attribute_rows"></block>
@@ -283,20 +301,20 @@
             <block type="html_attribute_maxlength"></block>
             <block type="html_attribute_multiple"></block>
           </category>
-  
+
           <category name="Form" colour="#BF1363" id="Attributes">
             <label text="Form"></label>
             <block type="html_attribute_for"></block>
             <block type="html_attribute_name"></block>
             <block type="html_attribute_pattern"></block>
-            <block type="html_attribute_disabled"></block>       
+            <block type="html_attribute_disabled"></block>
             <block type="html_attribute_label"></block>
             <block type="html_attribute_value"></block>
             <block type="html_attribute_list"></block>
             <block type="html_attribute_required"></block>
             <block type="html_attribute_autofocus"></block>
           </category>
-  
+
           <category name="Media" colour="#BF1363" id="Attributes">
             <label text="Media"></label>
             <block type="html_attribute_autoplay"></block>
@@ -305,8 +323,7 @@
             <block type="html_attribute_type"></block>
             <block type="html_attribute_alt"></block>
           </category>
-    
-        </category>       
+        </category>
       </category>
 
       <category name="CSS">
@@ -377,38 +394,43 @@
           <block type="css_border_collapse"></block>
         </category>
       </category>
-      
-      <category name="JavaScript" id="JavaScript">
 
+      <category name="JavaScript" id="JavaScript">
         <!-- 1. Basic Output & Debugging -->
         <category name="Basics" colour="#FFB400" id="JS_Basics">
           <block type="js_alert"></block>
           <block type="js_console_log"></block>
+          <block type="data"></block>
         </category>
-      
+
         <!-- 2. Variables & Constants -->
         <category name="Variables" colour="#F26B38" id="JS_Variables">
           <block type="js_variable_declare"></block>
           <block type="js_const_declare"></block>
           <block type="js_let_declare"></block>
         </category>
-      
+
         <!-- 3. Operators -->
         <category name="Operators" colour="#D7263D" id="JS_Operators">
+          <block type="js_assign"></block>
           <block type="js_arithmetic"></block>
           <block type="js_logical"></block>
           <block type="js_compare"></block>
+          <block type="js_not"></block>
         </category>
-      
+
         <!-- 4. Control Flow -->
         <category name="Control Flow" colour="#3E92CC" id="JS_ControlFlow">
+          <block type="js_if"></block>
+          <block type="js_elif"></block>
+          <block type="js_else"></block>
           <block type="js_if_else"></block>
           <block type="js_switch"></block>
           <block type="js_case"></block>
           <block type="js_break"></block>
           <block type="js_continue"></block>
         </category>
-      
+
         <!-- 5. Loops -->
         <category name="Loops" colour="#1F7A8C" id="JS_Loops">
           <block type="js_while_loop"></block>
@@ -416,22 +438,23 @@
           <block type="js_for_of_loop"></block>
           <block type="js_for_in_loop"></block>
         </category>
-      
+
         <!-- 6. Functions -->
         <category name="Functions" colour="#2EC4B6" id="JS_Functions">
           <block type="js_function"></block>
           <block type="js_arrow_function"></block>
+          <block type="js_argument"></block>
           <block type="js_function_call"></block>
           <block type="js_return"></block>
         </category>
-      
+
         <!-- 7. Events -->
         <category name="Events" colour="#7C83FD" id="JS_Events">
           <block type="js_event_listenerDOMContentLoaded"></block>
           <block type="js_event_listener"></block>
           <block type="js_remove_event_listener"></block>
         </category>
-      
+
         <!-- 8. Timing -->
         <category name="Timing" colour="#FF7F11" id="JS_Timing">
           <block type="js_set_timeout"></block>
@@ -439,7 +462,7 @@
           <block type="js_clear_timeout"></block>
           <block type="js_clear_interval"></block>
         </category>
-      
+
         <!-- 9. Arrays -->
         <category name="Arrays" colour="#9C27B0" id="JS_Arrays">
           <block type="js_array"></block>
@@ -452,7 +475,7 @@
           <block type="js_array_map"></block>
           <block type="js_array_filter"></block>
         </category>
-      
+
         <!-- 10. Objects -->
         <category name="Objects" colour="#8BC34A" id="JS_Objects">
           <block type="js_object_create"></block>
@@ -461,13 +484,13 @@
           <block type="js_object_keys"></block>
           <block type="js_object_values"></block>
         </category>
-      
+
         <!-- 11. JSON -->
         <category name="JSON" colour="#4CAF50" id="JS_JSON">
           <block type="js_json_parse"></block>
           <block type="js_json_stringify"></block>
         </category>
-      
+
         <!-- 12. DOM Manipulation -->
         <category name="DOM" colour="#607D8B" id="JS_DOM">
           <block type="js_get_element_by_id"></block>
@@ -478,13 +501,13 @@
           <block type="js_remove_class"></block>
           <block type="js_toggle_class"></block>
         </category>
-      
+
         <!-- 13. Error Handling -->
         <category name="Error Handling" colour="#E53935" id="JS_Errors">
           <block type="js_try_catch"></block>
           <block type="js_throw_error"></block>
         </category>
-      
+
         <!-- 14. Asynchronous -->
         <category name="Async Programming" colour="#00ACC1" id="JS_Async">
           <block type="js_promise"></block>
@@ -493,7 +516,7 @@
           <block type="js_async_function"></block>
           <block type="js_await"></block>
         </category>
-      
+
         <!-- 15. Type Conversion -->
         <category name="Type Conversion" colour="#6A1B9A" id="JS_Types">
           <block type="js_typeof"></block>
@@ -501,7 +524,7 @@
           <block type="js_parse_float"></block>
           <block type="js_to_string"></block>
         </category>
-      
+
         <!-- 16. Math Utilities -->
         <category name="Math" colour="#9E9D24" id="JS_Math">
           <block type="js_math_random"></block>
@@ -510,9 +533,7 @@
           <block type="js_math_round"></block>
           <block type="js_math_pow"></block>
         </category>
-      
       </category>
-      
     </xml>
     <button width="500" height="500">hello</button>
   </body>

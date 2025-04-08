@@ -4,10 +4,10 @@
 Blockly.Blocks['js_alert'] = {
   init: function () {
     this.appendDummyInput()
-      .appendField("alert(")
-      .appendField(new Blockly.FieldTextInput('Hello Coder!'), 'MESSAGE')
-      .appendField(")"); // Close the alert function call
-
+        .appendField("alert(");
+    this.appendValueInput('DATA');
+    this.appendDummyInput()
+        .appendField(")"); // Close the alert function call
     this.setPreviousStatement(true); // Allow connecting to previous blocks
     this.setNextStatement(true); // Allow connecting to next blocks
     this.setColour('#F85E00'); // Set block color
@@ -18,9 +18,10 @@ Blockly.Blocks['js_alert'] = {
 
 // Generate JavaScript code for the js_alert block
 Blockly.JavaScript['js_alert'] = function (block) {
-  var message = block.getFieldValue('MESSAGE'); // Get the message input
-  var code = 'alert("' + message + '");\n'; // Generate the JavaScript code for the alert
-  return code; // Return the code to be included in the generated script
+   // Check if there is a block connected on the left for chaining attributes
+   const message = Blockly.JavaScript.valueToCode(block, 'DATA', Blockly.JavaScript.ORDER_NONE) || '';
+   var code = `alert(${ message });\n`; // Generate the JavaScript code for the alert
+   return code; // Return the code to be included in the generated script
 };
 
 // Console log block
@@ -28,8 +29,9 @@ Blockly.Blocks['js_console_log'] = {
   init: function () {
     this.appendDummyInput()
       .appendField("console.log(")// Label for the block
-      .appendField(new Blockly.FieldTextInput('Hello Coder!'), 'TEXT')// Input 
-      .appendField(')');
+    this.appendValueInput('DATA');
+    this.appendDummyInput()
+          .appendField(")"); 
     // Label to clarify input
     this.setPreviousStatement(true); // Allow connecting to previous blocks
     this.setNextStatement(true); // Allow connecting to next blocks
@@ -41,10 +43,25 @@ Blockly.Blocks['js_console_log'] = {
 
 // JavaScript Code Generator for the js_console_log block
 Blockly.JavaScript['js_console_log'] = function (block) {
-  var text = block.getFieldValue('TEXT') || '""'; // Get the log message input
-  var code = 'console.log(' + text + ');\n'; // Generate the JavaScript code
+  const message = Blockly.JavaScript.valueToCode(block, 'DATA', Blockly.JavaScript.ORDER_NONE) || '';
+  var code = `console.log(${message});\n`; // Generate the JavaScript code
   return code; // Return the generated code
 };
+
+Blockly.Blocks['data']={
+  init:function(){
+    this.appendDummyInput()
+        .appendField(new Blockly.FieldTextInput('data'),'DATA');
+    this.setOutput(true);
+    this.setColour('#F85E00'); // Set block color
+
+  }
+}
+
+Blockly.JavaScript['data']=function (block){
+  var data= block.getFieldValue('DATA') || '""';
+  return [`${data}`, Blockly.JavaScript.ORDER_ATOMIC];
+}
 
 // Variable declaration block
 Blockly.Blocks['js_variable_declare'] = {
@@ -52,8 +69,10 @@ Blockly.Blocks['js_variable_declare'] = {
     this.appendDummyInput()
       .appendField("var") // Label for the block
       .appendField(new Blockly.FieldTextInput("variableName"), "VAR")// Input for variable name
-      .appendField(new Blockly.FieldTextInput(''), 'VALUE')// Input for variable value
-
+      .appendField('=')
+    this.appendValueInput('DATA');
+    this.appendDummyInput()
+         .appendField('')
     this.setPreviousStatement(true); // Allow connecting to previous blocks
     this.setNextStatement(true); // Allow connecting to next blocks
     this.setColour('#F85E00'); // Set block color
@@ -65,8 +84,8 @@ Blockly.Blocks['js_variable_declare'] = {
 // JavaScript Code Generator for the js_variable_declare block
 Blockly.JavaScript['js_variable_declare'] = function (block) {
   var variable = block.getFieldValue('VAR'); // Get the variable name input
-  var value = block.getFieldValue('VALUE') || '0'; // Get the value input
-  var code = 'var ' + variable + ' = ' + value + ';\n'; // Generate the JavaScript code
+  const value = Blockly.JavaScript.valueToCode(block, 'DATA', Blockly.JavaScript.ORDER_NONE) || ''; 
+  var code = `var ${variable} = ${value};\n`; // Generate the JavaScript code
   return code; // Return the generated code
 };
 
@@ -76,8 +95,10 @@ Blockly.Blocks['js_const_declare'] = {
     this.appendDummyInput()
       .appendField("const") // Label for the block
       .appendField(new Blockly.FieldTextInput("constantName"), "CONST")// Input for constant name
-      .appendField(new Blockly.FieldTextInput(''), 'VALUE')// Input for constant value
-
+      .appendField('=')
+    this.appendValueInput('DATA');
+    this.appendDummyInput()
+           .appendField('')
     this.setPreviousStatement(true); // Allow connecting to previous blocks
     this.setNextStatement(true); // Allow connecting to next blocks
     this.setColour('#F85E00'); // Set block color
@@ -89,8 +110,8 @@ Blockly.Blocks['js_const_declare'] = {
 // JavaScript Code Generator for the js_const_declare block
 Blockly.JavaScript['js_const_declare'] = function (block) {
   var constant = block.getFieldValue('CONST'); // Get the constant name input
-  var value = block.getFieldValue('VALUE') || '0'; // Get the value input
-  var code = 'const ' + constant + ' = ' + value + ';\n'; // Generate the JavaScript code
+  const value = Blockly.JavaScript.valueToCode(block, 'DATA', Blockly.JavaScript.ORDER_NONE) || '';
+  var code = `const ${constant} = ${value};\n`; // Generate the JavaScript code
   return code; // Return the generated code
 };
 
@@ -100,8 +121,10 @@ Blockly.Blocks['js_let_declare'] = {
     this.appendDummyInput()
       .appendField("let") // Label for the block
       .appendField(new Blockly.FieldTextInput("name"), "LET")// Input for variable name
-      .appendField(new Blockly.FieldTextInput(''), 'VALUE')// Input for variable value
-
+      .appendField('=')
+    this.appendValueInput('DATA');
+    this.appendDummyInput()
+           .appendField('')
     this.setPreviousStatement(true); // Allow connecting to previous blocks
     this.setNextStatement(true); // Allow connecting to next blocks
     this.setColour('#F85E00'); // Set block color
@@ -112,17 +135,39 @@ Blockly.Blocks['js_let_declare'] = {
 
 // JavaScript Code Generator for the js_let_declare block
 Blockly.JavaScript['js_let_declare'] = function (block) {
-  var name = block.getFieldValue('CONST'); // Get the variable name input
-  var value = block.getFieldValue('VALUE') || '0'; // Get the value input
-  var code = 'let ' + name + ' = ' + value + ';\n'; // Generate the JavaScript code
+  var name = block.getFieldValue('LET'); // Get the variable name input
+  const value = Blockly.JavaScript.valueToCode(block, 'DATA', Blockly.JavaScript.ORDER_NONE) || '';
+  var code = `let ${name} = ${value};\n`; // Generate the JavaScript code
   return code; // Return the generated code
 };
 
+Blockly.Blocks['js_assign']={
+  init:function(){
+    this.appendValueInput('VAR')
+        .appendField('')
+    this.appendDummyInput()
+        .appendField('=')
+    this.appendValueInput('DATA')
+    this.setPreviousStatement(true)
+    this.setNextStatement(true)
+    this.appendDummyInput('DATA')
+    this.setColour('#F85E00'); // Set block color
+
+  }
+}
+
+Blockly.JavaScript['js_assign']=function(block){
+  const name = Blockly.JavaScript.valueToCode(block, 'VAR', Blockly.JavaScript.ORDER_NONE) || '';
+  const value = Blockly.JavaScript.valueToCode(block, 'DATA', Blockly.JavaScript.ORDER_NONE) || ''; 
+
+  var code=`${name}=${value};\n`
+  return code;
+}
 // Arithmetic operations block
 Blockly.Blocks['js_arithmetic'] = {
   init: function () {
     this.appendValueInput("A").setCheck("Number");
-    this.appendDummyInput().appendField(new Blockly.FieldDropdown([["+", "+"], ["-", "-"], ["*", "*"], ["/", "/"]]), "OPERATOR");
+    this.appendDummyInput().appendField(new Blockly.FieldDropdown([["+", "+"], ["-", "-"], ["*", "*"], ["/", "/"],["%","%"]]), "OPERATOR");
     this.appendValueInput("B").setCheck("Number");
     this.setOutput(true, "Number");
     this.setColour('#F85E00');
@@ -160,7 +205,7 @@ Blockly.JavaScript['js_logical'] = function (block) {
 Blockly.Blocks['js_compare'] = {
   init: function () {
     this.appendValueInput("A").setCheck("Number");
-    this.appendDummyInput().appendField(new Blockly.FieldDropdown([["=", "=="], ["!=", "!="], ["<", "<"], [">", ">"], ["<=", "<="], [">=", ">="]]), "OPERATOR");
+    this.appendDummyInput().appendField(new Blockly.FieldDropdown([["==", "=="],["===", "==="], ["!=", "!="], ["!==", "!=="], ["<", "<"], [">", ">"], ["<=", "<="], [">=", ">="]]), "OPERATOR");
     this.appendValueInput("B").setCheck("Number");
     this.setOutput(true, "Boolean");
     this.setColour('#F85E00');
@@ -175,13 +220,63 @@ Blockly.JavaScript['js_compare'] = function (block) {
   return [`${a} ${operator} ${b}`, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
+Blockly.Blocks['js_not'] = {
+  init: function () {
+    this.appendDummyInput()
+        .appendField("!");
+    this.appendValueInput("VALUE")
+        .setCheck(null); // Accept any input type
+    this.setInputsInline(true);
+    this.setOutput(true);
+    this.setColour('#F85E00'); // Use your preferred color
+    this.setTooltip("Logical NOT");
+    this.setHelpUrl("");
+  }
+};
+
+Blockly.JavaScript['js_not'] = function (block) {
+  const value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_LOGICAL_NOT) || 'false';
+  return [`!(${value})`, Blockly.JavaScript.ORDER_LOGICAL_NOT];
+};
+
+// If block
+Blockly.Blocks['js_if'] = {
+  init: function () {
+    this.appendDummyInput()
+      .appendField("if")
+      .appendField('(');
+    this.appendValueInput("CONDITION")
+      .setCheck("Boolean");
+    this.appendDummyInput()
+      .appendField(')');
+    this.appendStatementInput("DO")
+      .appendField("");
+    this.setColour('#F85E00');
+    this.setTooltip("Simple if condition.");
+    this.setHelpUrl("");
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+  }
+};
+
+Blockly.JavaScript['js_if'] = function (block) {
+  var condition = Blockly.JavaScript.valueToCode(block, 'CONDITION', Blockly.JavaScript.ORDER_ATOMIC) || 'false';
+  var doStatements = Blockly.JavaScript.statementToCode(block, 'DO');
+  var code = `if (${condition}) {\n${doStatements}\n}\n`;
+  return code;
+};
+
+
 // If-Else block
 Blockly.Blocks['js_if_else'] = {
   init: function () {
     this.appendDummyInput()
-      .appendField("if"); // Label for the if statement
+      .appendField("if") // Label for the if statement
+      .appendField('(');
     this.appendValueInput("CONDITION") // Input for the condition
       .setCheck("Boolean"); // Check type is Boolean
+    this.appendDummyInput()
+        .appendField(')')
     this.appendStatementInput("DO") // Statement input for the if block
       .appendField(""); // Label for the action if condition is true
     this.appendDummyInput()
@@ -203,6 +298,54 @@ Blockly.JavaScript['js_if_else'] = function (block) {
   var elseStatements = Blockly.JavaScript.statementToCode(block, 'ELSE'); // Get statements for the else part
   var code = `if (${condition}) {\n${doStatements}\n} else {\n${elseStatements}\n}\n`; // Generate the JavaScript code
   return code; // Return the generated code
+};
+
+// Else-if (elif) block
+Blockly.Blocks['js_elif'] = {
+  init: function () {
+    this.appendDummyInput()
+      .appendField("else if")
+      .appendField('(');
+    this.appendValueInput("CONDITION")
+      .setCheck("Boolean");
+    this.appendDummyInput()
+      .appendField(')');
+    this.appendStatementInput("DO")
+      .appendField("");
+    this.setColour('#F85E00');
+    this.setTooltip("Else-if condition.");
+    this.setHelpUrl("");
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+  }
+};
+
+Blockly.JavaScript['js_elif'] = function (block) {
+  var condition = Blockly.JavaScript.valueToCode(block, 'CONDITION', Blockly.JavaScript.ORDER_ATOMIC) || 'false';
+  var doStatements = Blockly.JavaScript.statementToCode(block, 'DO');
+  var code = `else if (${condition}) {\n${doStatements}\n}\n`;
+  return code;
+};
+
+// Else block
+Blockly.Blocks['js_else'] = {
+  init: function () {
+    this.appendDummyInput()
+      .appendField("else");
+    this.appendStatementInput("DO")
+      .appendField("");
+    this.setColour('#F85E00');
+    this.setTooltip("Else block to run code when previous conditions are false.");
+    this.setHelpUrl("");
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+  }
+};
+
+Blockly.JavaScript['js_else'] = function (block) {
+  var doStatements = Blockly.JavaScript.statementToCode(block, 'DO');
+  var code = `else {\n${doStatements}\n}\n`;
+  return code;
 };
 
 Blockly.Blocks['js_switch'] = {
@@ -301,7 +444,7 @@ Blockly.Blocks['js_while_loop'] = {
 };
 
 Blockly.JavaScript['js_while_loop'] = function (block) {
-  var condition = Blockly.JavaScript.valueToCode(block, 'CONDITION', Blockly.JavaScript.ORDER_NONE) || 'true';
+  var condition = Blockly.JavaScript.valueToCode(block, 'CONDITION', Blockly.JavaScript.ORDER_NONE) || 'false';
   var statements_do = Blockly.JavaScript.statementToCode(block, 'DO');
   var code = `while (${condition}) {\n${statements_do}}\n`;
   return code;
@@ -420,83 +563,161 @@ Blockly.JavaScript['js_for_in_loop'] = function (block) {
   return code;
 };
 
-// Function definition block
+// Function definition block with parameter support
 Blockly.Blocks['js_function'] = {
   init: function () {
     this.appendDummyInput()
-      .appendField("function") // Label for the block
-      .appendField(new Blockly.FieldTextInput("myFunction"), "NAME")// Input for function name
-      .appendField("() {"); // Label for the parameter list
+      .appendField("function")
+      .appendField(new Blockly.FieldTextInput("myFunction"), "NAME")
+      .appendField("(")
+      .appendField(new Blockly.FieldTextInput(""), "PARAMS") // safer split
+      .appendField(") {");
 
     this.appendStatementInput('CONTENT')
-      .setCheck(null)
+      .setCheck(null);
 
     this.appendDummyInput()
-      .appendField('}')     // Label for the closing brace
+      .appendField("}");
 
-    this.setColour('#F85E00'); // Set block color
-    this.setTooltip("Define a JavaScript function."); // Tooltip for the block
-    this.setHelpUrl(""); // Help URL if needed
-    this.setPreviousStatement(true); // Allow connecting to previous blocks
-    this.setNextStatement(true); // Allow connecting to next blocks
+    this.setColour('#F85E00');
+    this.setTooltip("Define a JavaScript function with optional parameters.");
+    this.setHelpUrl("");
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
   }
 };
 
-// JavaScript Code Generator for the js_function block
 Blockly.JavaScript['js_function'] = function (block) {
-  var functionName = block.getFieldValue('NAME'); // Get the function name input
-  var statements_do = Blockly.JavaScript.statementToCode(block, 'CONTENT'); // Get the statements inside the function
-  var code = 'function ' + functionName + '() {\n' + statements_do + '}\n'; // Generate the JavaScript code
-  return code; // Return the generated code
+  var functionName = block.getFieldValue('NAME') || 'myFunction';
+  var params = block.getFieldValue('PARAMS') || '';
+  var statements = Blockly.JavaScript.statementToCode(block, 'CONTENT');
+  var code = `function ${functionName}(${params}) {\n${statements}}\n`;
+  return code;
 };
+
 
 Blockly.Blocks['js_arrow_function'] = {
   init: function () {
     this.appendDummyInput()
       .appendField("const")
-      .appendField(new Blockly.FieldVariable("myFunc"), "FUNC_NAME")
-      .appendField("=");
-    this.appendDummyInput()
+      .appendField(new Blockly.FieldTextInput("myFunction"), "NAME")
+      .appendField("=")
       .appendField("(")
-      .appendField(new Blockly.FieldTextInput("param"), "PARAM")
+      .appendField(new Blockly.FieldTextInput(""), "PARAMS")
       .appendField(")")
       .appendField("=> {");
-    this.appendStatementInput("BODY")
-      .setCheck(null)
-      .appendField("");
+
+    this.appendStatementInput('CONTENT')
+      .setCheck(null);
+
     this.appendDummyInput()
       .appendField("}");
-    this.setPreviousStatement(true, null);
-    this.setNextStatement(true, null);
+
     this.setColour('#F85E00');
-    this.setTooltip("Defines an arrow function.");
+    this.setTooltip("Define a JavaScript arrow function.");
     this.setHelpUrl("");
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
   }
 };
 
 Blockly.JavaScript['js_arrow_function'] = function (block) {
-  var funcName = Blockly.JavaScript.nameDB_.getName(block.getFieldValue('FUNC_NAME'), Blockly.Variables.NAME_TYPE);
-  var param = block.getFieldValue('PARAM');
-  var body = Blockly.JavaScript.statementToCode(block, 'BODY');
-  var code = `const ${funcName} = (${param}) => {\n${body}};\n`;
+  const functionName = block.getFieldValue('NAME') || 'myFunction';
+  const params = block.getFieldValue('PARAMS') || '';
+  const statements = Blockly.JavaScript.statementToCode(block, 'CONTENT');
+  const code = `const ${functionName} = (${params}) => {\n${statements}};\n`;
   return code;
 };
 
-// Function call block
-Blockly.Blocks['js_function_call'] = {
+// Block to define a value or variable to be used as an argument
+Blockly.Blocks['js_argument'] = {
   init: function () {
-    this.appendDummyInput().appendField("call function").appendField(new Blockly.FieldTextInput("myFunction"), "FUNCTION_NAME");
-    this.setPreviousStatement(true);
-    this.setNextStatement(true);
-    this.setColour('#F85E00');
-    this.setTooltip("Call a defined function.");
+    this.appendDummyInput()
+      .appendField("arg")
+      .appendField(new Blockly.FieldTextInput("value"), "ARG_VALUE");
+    this.setOutput(true); // Allows connection into value inputs
+    this.setColour('#FFAA00');
+    this.setTooltip("An argument value to pass to a function.");
+    this.setHelpUrl("");
   }
 };
 
+Blockly.JavaScript['js_argument'] = function (block) {
+  const value = block.getFieldValue('ARG_VALUE');
+  
+  // If it's a valid number, return as number
+  if (!isNaN(Number(value))) {
+    return [value, Blockly.JavaScript.ORDER_ATOMIC];
+  }
+
+  // If it's a string, wrap in quotes
+  if (/^".*"$/.test(value) || /^'.*'$/.test(value)) {
+    return [value, Blockly.JavaScript.ORDER_ATOMIC];
+  }
+
+  // Else treat as variable name
+  return [value, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
+Blockly.Blocks['js_function_call'] = {
+  init: function () {
+    this.argumentCount_ = 0;
+
+    // Inline input for function name and open paren
+    this.appendDummyInput('HEADER')
+      .appendField(new Blockly.FieldTextInput("myFunction"), "FUNCTION_NAME")
+      .appendField("(");
+
+    // Closing paren will always be at the end
+    this.appendDummyInput('CLOSE_PAREN')
+      .appendField(")");
+
+    // Buttons (+ / -) inline too
+    this.appendDummyInput('BUTTONS')
+      .appendField(new Blockly.FieldImage("https://img.icons8.com/ios-glyphs/20/000000/plus-math.png", 15, 15, "+", this.addArgument_.bind(this)))
+      .appendField(new Blockly.FieldImage("https://img.icons8.com/ios-glyphs/20/000000/minus-math.png", 15, 15, "-", this.removeArgument_.bind(this)));
+
+    this.setInputsInline(true);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setColour('#F85E00');
+    this.setTooltip("Call a function like in JavaScript.");
+  },
+
+  addArgument_: function () {
+    const inputName = 'ARG' + this.argumentCount_;
+    const input = this.appendValueInput(inputName)
+      .setCheck(null);
+
+    if (this.argumentCount_ > 0) {
+      input.appendField(","); // Add comma for all but first
+    }
+
+    this.moveInputBefore(inputName, 'CLOSE_PAREN');
+    this.argumentCount_++;
+  },
+
+  removeArgument_: function () {
+    if (this.argumentCount_ > 0) {
+      this.argumentCount_--;
+      this.removeInput('ARG' + this.argumentCount_);
+    }
+  }
+};
+
+
 Blockly.JavaScript['js_function_call'] = function (block) {
   const functionName = block.getFieldValue('FUNCTION_NAME');
-  return `${functionName}();\n`;
+  const args = [];
+
+  for (let i = 0; i < block.argumentCount_; i++) {
+    const arg = Blockly.JavaScript.valueToCode(block, 'ARG' + i, Blockly.JavaScript.ORDER_NONE) || '';
+    args.push(arg);
+  }
+
+  return `${functionName}(${args.join(', ')});\n`;
 };
+
 
 // Return block
 Blockly.Blocks['js_return'] = {
@@ -613,7 +834,7 @@ Blockly.Blocks['js_set_timeout'] = {
 
 Blockly.JavaScript['js_set_timeout'] = function (block) {
   const statements_do = Blockly.JavaScript.statementToCode(block, 'DO');
-  const time = Blockly.JavaScript.valueToCode(block, 'TIME', Blockly.JavaScript.ORDER_ATOMIC) || '1000';
+  const time = block.getFieldValue('TIMEOUT') || 1000;
   return `setTimeout(function() {\n${statements_do}}, ${time});\n`;
 };
 
@@ -632,7 +853,7 @@ Blockly.Blocks['js_set_interval'] = {
 
 Blockly.JavaScript['js_set_interval'] = function (block) {
   const statements_do = Blockly.JavaScript.statementToCode(block, 'DO');
-  const time = Blockly.JavaScript.valueToCode(block, 'TIME', Blockly.JavaScript.ORDER_ATOMIC) || '1000';
+  const time = block.getFieldValue('INTERVAL') || 1000;
   return `setInterval(function() {\n${statements_do}}, ${time});\n`;
 };
 
@@ -774,10 +995,7 @@ Blockly.Blocks['js_array_pop'] = {
   init: function () {
     this.appendDummyInput()
       .appendField(new Blockly.FieldTextInput('arrayName'), 'NAME')
-      .appendField(".pop(")
-    this.appendValueInput("ITEM")
-    this.appendDummyInput()
-      .appendField(')')
+      .appendField(".pop()")
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setColour('#F85E00');
@@ -788,7 +1006,7 @@ Blockly.Blocks['js_array_pop'] = {
 
 Blockly.JavaScript['js_array_pop'] = function (block) {
   const array = block.getFieldValue('NAME') || 'arrayName';
-  var code = `${array}.pop()`;
+  var code = `${array}.pop();\n`;
   return code;
 };
 

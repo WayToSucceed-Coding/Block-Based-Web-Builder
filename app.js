@@ -1,8 +1,6 @@
 // app.js
 
 // Initialize the Blockly workspace
-
-
 var workspace = Blockly.inject('blocklyDiv', {
     toolbox: document.getElementById('toolbox'),
     trashcan: false,  // Hide the trashcan to prevent accidental deletion,
@@ -16,8 +14,6 @@ var workspace = Blockly.inject('blocklyDiv', {
         }
     }
 });
-
-
 
 // Create a function to add or update the label block
 function updateFileLabelBlock(fileName) {
@@ -64,7 +60,6 @@ function addFile(name, type) {
 function renderFileList() {
     var fileList = document.getElementById('fileList');
     fileList.innerHTML = '';
-
 
     files.forEach((file, index) => {
         // Create a clickable <a> tag for each file
@@ -501,9 +496,6 @@ function injectDefaultHtmlBlocks(workspace) {
         const xml = Blockly.Xml.textToDom(xmlText);
         Blockly.Xml.domToWorkspace(xml, workspace);
     }
-
-
-
 }
 
 // Initialize by creating an initial HTML file when the page loads
@@ -556,6 +548,8 @@ function updateGeneratedCode() {
 // Add a listener to update the generated code whenever the workspace changes
 workspace.addChangeListener(updateGeneratedCode);
 
+//document.getElementById('runCode').addEventListener('click',updateGeneratedCode);
+
 // Listen for messages from the iframe to handle navigation
 window.addEventListener('message', function (event) {
     if (event.data.type === 'navigate' && event.data.href) {
@@ -588,20 +582,14 @@ fileManagerButton.addEventListener("click", function () {
         document.querySelector('.blocklyToolboxDiv').style.setProperty('display', 'none', 'important');
         if(isFlyoutOpen){
             flyout.style.setProperty('display', 'none', 'important');
-        }
-       
-        
+        }   
     }
-
-
     if (fileManager.style.display === "none" || !fileManager.style.display) {
         fileManager.style.display = "block";
         this.classList.toggle('active');
-
     } else {
         fileManager.style.display = "none";
         this.classList.toggle('active');
-
     }
 });
 
@@ -778,7 +766,7 @@ toolboxButton.addEventListener('click', function () {
 function setupSingleCategoryOpen() {
     // Listen for Blockly events on the workspace
     workspace.addChangeListener(function (event) {
-        console.log(event.type)
+        //console.log(event.type)
         // Check if the event is a category open event
         if (event.type === 'toolbox_item_select') {
 
@@ -841,4 +829,5 @@ function setupSingleCategoryOpen() {
 
 // Call this function after Blockly workspace has been initialized
 setupSingleCategoryOpen();
+
 
