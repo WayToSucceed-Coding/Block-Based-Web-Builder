@@ -19,7 +19,7 @@ var workspace = Blockly.inject('blocklyDiv', {
 function updateFileLabelBlock(fileName) {
     document.getElementById('current-filename').textContent = fileName;
 }
- var isFlyoutOpen;
+var isFlyoutOpen;
 
 // Data structure to hold user-created files
 var files = [];
@@ -50,6 +50,9 @@ function addFile(name, type) {
     // Add to files array and userFiles object
     files.push(fileObj);
     userFiles[`${name}.${type}`] = ''; // Initialize empty content
+
+    console.log('Files: ', files)
+    console.log('User Files: ', userFiles)
 
     // Render the file list and select the new file
     renderFileList();
@@ -141,7 +144,7 @@ function selectFile(index) {
     userFiles[`${file.name}.${file.type}`] = file.generatedCode;
 
     // Update the live preview
-    updateLivePreview();
+    //updateLivePreview();
 }
 
 // Function to delete a file
@@ -245,72 +248,66 @@ function generateCodeForFile(file) {
     }
     return code;
 }
-//Function to generate HTML from blocks
-function generateHTMLFromBlocks() {
-    if (currentFileIndex === -1) return; // No file selected
+// Function to generate HTML from blocks (always based on index.html)
+function generateHTMLFromBlocks(run,fileObj) {
+    if (run) {
+        //Always look for index.html regardless of selected file
+        var selectedFile = files.find(f => f.name === 'index' && f.type === 'html');
+        // if (!selectedFile) {
+        //     console.warn('index.html not found.');
+        //     document.getElementById('preview').srcdoc = '';
+        //     return ['', '', '', '', null];
+        // }
 
-    var selectedFile = files[currentFileIndex];
-
-    // Check if the selected file is an HTML file
-    if (selectedFile.type !== 'html') {
-        console.warn('Please select an HTML file to preview.');
-        document.getElementById('preview').srcdoc = ''; // Clear the iframe
-        return;
+        //console.log(selectedFile)
     }
+    else{
+         
+        var selectedFile=fileObj
+        //console.log(selectedFile)
+    }
+       
+        var htmlContent = selectedFile.generatedCode;
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(htmlContent, 'text/html');
 
-    // Get the selected HTML file's code
-    var htmlContent = selectedFile.generatedCode;
+        var bodyContent = doc.body.innerHTML;
+        var styleContentHead = doc.head.querySelector('style')?.textContent || '';
+        var bodyStyle = doc.body.getAttribute('style') || '';
 
-    // console.log("HTML Content:", htmlContent);
+        var linkedCSS = Array.from(doc.querySelectorAll('link[rel="stylesheet"]'))
+            .map(link => link.getAttribute('href'));
 
-    // Temporary container to parse HTML and find linked resources
-    var parser = new DOMParser();
-    var doc = parser.parseFromString(htmlContent, 'text/html');
+        var linkedJS = Array.from(doc.querySelectorAll('script[src]'))
+            .map(script => script.getAttribute('src'));
 
-    var bodyContent = doc.body.innerHTML;
-    var styleContentHead = doc.head.querySelector('style')?.textContent || '';
-    var bodyStyle = doc.body.getAttribute('style') || '';  // Get the inline style on <body>
+        var allCSS = linkedCSS
+            .map(href => {
+                var cssFile = files.find(file => `${file.name}.css` === href);
+                return cssFile ? cssFile.generatedCode : '';
+            })
+            .join('\n');
 
+        allCSS = `${styleContentHead} ${allCSS}`;
 
-    // Collect CSS and JS file names from link and script tags in the HTML
-    var linkedCSS = Array.from(doc.querySelectorAll('link[rel="stylesheet"]'))
-        .map(link => link.getAttribute('href'));
+        var allJS = linkedJS
+            .map(src => {
+                var jsFile = files.find(file => `${file.name}.js` === src);
+                return jsFile ? jsFile.generatedCode : '';
+            })
+            .join('\n');
 
-    var linkedJS = Array.from(doc.querySelectorAll('script[src]'))
-        .map(script => script.getAttribute('src'));
-
-    // console.log("Linked CSS files:", linkedCSS);
-    // console.log("Linked JS files:", linkedJS);
-
-    // Aggregate CSS and JS contents based on the linked files
-    var allCSS = linkedCSS
-        .map(href => {
-            var cssFile = files.find(file => `${file.name}.css` === href);
-            // console.log(`CSS file for ${href}:`, cssFile);
-            return cssFile ? cssFile.generatedCode : '';
-        })
-        .join('\n');
-    allCSS = `${styleContentHead} ${allCSS}`;
-    var allJS = linkedJS
-        .map(src => {
-            var jsFile = files.find(file => `${file.name}.js` === src);
-            // console.log(`JS file for ${src}:`, jsFile);
-            return jsFile ? jsFile.generatedCode : '';
-        })
-        .join('\n');
-
-    // console.log("All CSS combined:", allCSS);
-    // console.log("All JS combined:", allJS);
-
-    return [allCSS, bodyStyle, bodyContent, allJS, selectedFile]
+        return [allCSS, bodyStyle, bodyContent, allJS, selectedFile];   
 }
+
+
 // Function to update the live preview iframe
+function updateLivePreview(run,fileObj) {
 
-function updateLivePreview() {
+    const [allCSS, bodyStyle, bodyContent, allJS, selectedFile] = generateHTMLFromBlocks(run,fileObj);
 
-    const [allCSS, bodyStyle, bodyContent, allJS, selectedFile] = generateHTMLFromBlocks()
+    if (!selectedFile) return;
 
-    // Construct the full HTML document with the specific CSS and JS included
     var fullHTML = `<!DOCTYPE html>
     <html lang="en">
     <head>
@@ -320,54 +317,43 @@ function updateLivePreview() {
     </head>
     <body ${bodyStyle ? `style="${bodyStyle}"` : ''}>
         ${bodyContent}
-    
         ${allJS ? `<script>${allJS}</script>` : ''}
-         <script>
-      // Intercept link clicks and handle internal/external navigation
-      document.addEventListener('click', function(e) {
-          var target = e.target.closest('a'); // Support nested elements inside <a>
-          if (target && target.tagName === 'A' && target.getAttribute('href')) {
-              var href = target.getAttribute('href');
-              // Check if the link is external
-              if (href.startsWith('http://') || href.startsWith('https://')) {
-                  // External link: allow default behavior (e.g., open in new tab)
-                  // Optionally, you can set target="_blank" dynamically
-                  target.setAttribute('target', '_blank');
-              } else {
-                  // Internal link: handle navigation within the editor
-                  e.preventDefault(); // Prevent default navigation
-                  window.parent.postMessage({ type: 'navigate', href: href }, '*'); // Send message to parent
-              }
-          }
-      });
-    </script>
+        <script>
+            document.addEventListener('click', function(e) {
+                var target = e.target.closest('a');
+                if (target && target.tagName === 'A' && target.getAttribute('href')) {
+                    var href = target.getAttribute('href');
+                    if (href.startsWith('http://') || href.startsWith('https://')) {
+                        target.setAttribute('target', '_blank');
+                    } else {
+                        e.preventDefault();
+                        window.parent.postMessage({ type: 'navigate', href: href }, '*');
+                    }
+                }
+            });
+        </script>
     </body>
     </html>`;
 
-    //console.log("Final HTML for preview:", fullHTML);
-
-    // Update the Live Preview iframe's srcdoc
     var iframe = document.getElementById('preview');
     iframe.srcdoc = fullHTML;
 
-    // Also update the pop-out window
     updatePopOutWindow(allCSS, bodyStyle, bodyContent, allJS);
 }
 
-
 // Function to load a specific page into the Live Preview iframe
 function loadPage(page) {
-    function updatePopOutWindow(allCSS, bodyStyle, bodyContent, allJS) {
-        if (previewWindow && !previewWindow.closed) {
-            previewWindow.postMessage({
-                type: "updateContent",
-                css: allCSS,
-                style: bodyStyle,
-                content: bodyContent,
-                js: allJS
-            }, "*");
-        }
-    }
+    // function updatePopOutWindow(allCSS, bodyStyle, bodyContent, allJS) {
+    //     if (previewWindow && !previewWindow.closed) {
+    //         previewWindow.postMessage({
+    //             type: "updateContent",
+    //             css: allCSS,
+    //             style: bodyStyle,
+    //             content: bodyContent,
+    //             js: allJS
+    //         }, "*");
+    //     }
+    // }
     // Ensure the page exists in userFiles
     if (!userFiles.hasOwnProperty(page)) {
         alert(`File "${page}" does not exist.`);
@@ -391,7 +377,23 @@ function loadPage(page) {
 
     // Select the target file, which will update the Live Preview
     selectFile(targetIndex);
+
+    updateLivePreview(false,fileObj)
+
+
 }
+
+// Handle navigation messages from iframe
+window.addEventListener('message', event => {
+    if (event.data.type === 'navigate' && event.data.href) {
+        const href = event.data.href;
+        if (userFiles.hasOwnProperty(href)) {
+            loadPage(href);
+        } else {
+            alert(`File "${href}" does not exist.`);
+        }
+    }
+});
 function showModal() {
     confirmationModal.style.display = 'block'; // Show the modal
 }
@@ -497,149 +499,117 @@ function injectDefaultHtmlBlocks(workspace) {
         Blockly.Xml.domToWorkspace(xml, workspace);
     }
 }
-
 // Initialize by creating an initial HTML file when the page loads
-window.addEventListener('load', function () {
+window.addEventListener('load', () => {
     createInitialHtmlFile();
-
     // Optionally, create a default about.html file
     // addFile('about', 'html');
 });
 
-// Function to generate code from the workspace and store it in the current file
+// Function to generate code from the Blockly workspace and store it
 function updateGeneratedCode() {
     if (currentFileIndex === -1) return;
 
-    var file = files[currentFileIndex];
-    var code = '';
+    const file = files[currentFileIndex];
+    let code = '';
 
-    // Generate code based on file type
     if (file.type === 'html') {
-        // Use your custom HTML generator
-        if (Blockly.Html) {
-            code = Blockly.Html.workspaceToCode(workspace);
-        } else {
-            // If no custom generator, use JavaScript generator as placeholder
-            code = Blockly.JavaScript.workspaceToCode(workspace);
-            console.warn('No custom HTML generator found. Using JavaScript generator instead.');
-        }
+        code = Blockly.Html ? Blockly.Html.workspaceToCode(workspace) : Blockly.JavaScript.workspaceToCode(workspace);
     } else if (file.type === 'css') {
-        // Use your custom CSS generator
-        if (Blockly.Css) {
-            code = Blockly.JavaScript.workspaceToCode(workspace);
-        } else {
-            // If no custom generator, use JavaScript generator as placeholder
-            code = Blockly.JavaScript.workspaceToCode(workspace);
-            console.warn('No custom CSS generator found. Using JavaScript generator instead.');
-        }
+        code = Blockly.Css ? Blockly.JavaScript.workspaceToCode(workspace) : Blockly.JavaScript.workspaceToCode(workspace);
     } else if (file.type === 'js') {
-        // Use the JavaScript generator
         code = Blockly.JavaScript.workspaceToCode(workspace);
     }
 
     file.generatedCode = code;
-    userFiles[`${file.name}.${file.type}`] = code; // Update the userFiles mapping
+    userFiles[`${file.name}.${file.type}`] = code;
     document.getElementById('generatedCode').value = code;
 
-    // Update the Live Preview
-    updateLivePreview();
+    //updateLivePreview();
 }
 
-// Add a listener to update the generated code whenever the workspace changes
+// Update code when blocks change
 workspace.addChangeListener(updateGeneratedCode);
 
-//document.getElementById('runCode').addEventListener('click',updateGeneratedCode);
-
-// Listen for messages from the iframe to handle navigation
-window.addEventListener('message', function (event) {
-    if (event.data.type === 'navigate' && event.data.href) {
-        var href = event.data.href;
-        console.log(`Message received to navigate to: ${href}`);
-
-        if (userFiles.hasOwnProperty(href)) {
-            loadPage(href);
-        } else {
-            alert(`File "${href}" does not exist.`);
-        }
-    }
+document.getElementById("runCode").addEventListener("click", () => {
+  
+    updateLivePreview(true,{});
 });
 
-// Handle opening/closing of File Manager and Toolbox
+// -------------------- UI: File Manager & Toolbox Toggle --------------------
+
 const fileManagerButton = document.getElementById("fileManagerButton");
 const fileManager = document.getElementById("fileManager");
 const toolboxButton = document.getElementById("toolsButton");
 
-// Toggle File Manager visibility
-fileManagerButton.addEventListener("click", function () {
-    var toolboxDiv = document.querySelector('.blocklyToolboxDiv');
-    var flyout=document.querySelector('.blocklyFlyout');
-    
-    //To close toolbox if user clicks on files button
-    var isVisible = window.getComputedStyle(toolboxDiv).display == 'block';
+fileManagerButton.addEventListener("click", () => {
+    const toolboxDiv = document.querySelector('.blocklyToolboxDiv');
+    const flyout = document.querySelector('.blocklyFlyout');
+    const isVisible = window.getComputedStyle(toolboxDiv).display === 'block';
 
     if (isVisible) {
-        toolboxButton.classList.toggle('active')
-        document.querySelector('.blocklyToolboxDiv').style.setProperty('display', 'none', 'important');
-        if(isFlyoutOpen){
-            flyout.style.setProperty('display', 'none', 'important');
-        }   
+        toolboxButton.classList.toggle('active');
+        toolboxDiv.style.setProperty('display', 'none', 'important');
+        if (isFlyoutOpen) flyout.style.setProperty('display', 'none', 'important');
     }
-    if (fileManager.style.display === "none" || !fileManager.style.display) {
-        fileManager.style.display = "block";
-        this.classList.toggle('active');
-    } else {
-        fileManager.style.display = "none";
-        this.classList.toggle('active');
-    }
+
+    fileManager.style.display = fileManager.style.display === "block" ? "none" : "block";
+    fileManagerButton.classList.toggle('active');
 });
 
-// Get elements
+toolboxButton.addEventListener('click', () => {
+    if (fileManager.style.display === "block") {
+        fileManagerButton.classList.toggle('active');
+        fileManager.style.display = "none";
+    }
+
+    const toolboxDiv = document.querySelector('.blocklyToolboxDiv');
+    const flyout = document.querySelector('.blocklyFlyout');
+    const flyoutVisible = flyout.style.display === "block";
+    const isVisible = window.getComputedStyle(toolboxDiv).display === 'block';
+
+    toolboxButton.classList.toggle('active');
+    toolboxDiv.style.setProperty('display', isVisible ? 'none' : 'block', 'important');
+    if (isFlyoutOpen && !isVisible) flyout.style.display = "block";
+    if (isFlyoutOpen && isVisible) flyout.style.display = "none";
+});
+
+// -------------------- UI: Resizing Editor Panels --------------------
+
 const resizer = document.getElementById('resizer');
 const rightPane = document.getElementById('rightPane');
 const blocklyArea = document.getElementById('blocklyArea');
-
-// Initial mouse position
 let x = 0;
 let rightPaneWidth = rightPane.offsetWidth;
 
-// Mouse down event to start resizing
-resizer.addEventListener('mousedown', function (e) {
+resizer.addEventListener('mousedown', e => {
     x = e.clientX;
     rightPaneWidth = rightPane.offsetWidth;
-
     document.addEventListener('mousemove', resize);
     document.addEventListener('mouseup', stopResize);
 });
 
-// Function to resize the right pane
 function resize(e) {
     const dx = e.clientX - x;
     rightPane.style.width = `${rightPaneWidth - dx}px`;
-    blocklyArea.style.flexGrow = 1;  // Ensure the Blockly area fills the remaining space
-    Blockly.svgResize(workspace);    // Resize the Blockly workspace
+    blocklyArea.style.flexGrow = 1;
+    Blockly.svgResize(workspace);
 }
 
-// Stop resizing on mouse up
 function stopResize() {
     document.removeEventListener('mousemove', resize);
     document.removeEventListener('mouseup', stopResize);
 }
 
-// Toggle between showing the code and the preview
-document.getElementById('showCodeButton').addEventListener('click', function () {
-    toggleView('code');
-});
+// -------------------- UI: Toggle View Between Code and Preview --------------------
 
-document.getElementById('showPreviewButton').addEventListener('click', function () {
-    toggleView('preview');
-});
-
+document.getElementById('showCodeButton').addEventListener('click', () => toggleView('code'));
+document.getElementById('showPreviewButton').addEventListener('click', () => toggleView('preview'));
 
 function toggleView(view) {
     const codeSection = document.getElementById('generatedCodeSection');
     const previewSection = document.getElementById('previewSection');
 
-    // Reset active button styles
     document.querySelectorAll('.toggle-btn').forEach(btn => btn.classList.remove('active'));
 
     if (view === 'code') {
@@ -653,7 +623,10 @@ function toggleView(view) {
     }
 }
 
+// -------------------- Preview Popout Window --------------------
+
 let previewWindow = null;
+
 function updatePopOutWindow(allCSS, bodyStyle, bodyContent, allJS) {
     if (previewWindow && !previewWindow.closed) {
         previewWindow.postMessage({
@@ -665,17 +638,14 @@ function updatePopOutWindow(allCSS, bodyStyle, bodyContent, allJS) {
         }, "*");
     }
 }
+
 function popOutPreview() {
     if (previewWindow && !previewWindow.closed) {
-        // Focus the existing preview window if already open
         previewWindow.focus();
     } else {
-        // Open a new preview window
-        previewWindow = window.open("", "PreviewWindow", "width=800,height=600");
-
-        // Basic HTML structure with a message listener for updates
         const [allCSS, bodyStyle, bodyContent, allJS, selectedFile] = generateHTMLFromBlocks();
 
+        previewWindow = window.open("", "PreviewWindow", "width=800,height=600");
         previewWindow.document.write(`
             <!DOCTYPE html>
             <html>
@@ -684,22 +654,17 @@ function popOutPreview() {
                 <title>Live Preview - ${selectedFile.name}</title>
                 ${allCSS ? `<style>${allCSS}</style>` : ''}
                 <script>
-                    // Set up listener to handle updates from main window
-                    window.addEventListener('message', (event) => {
+                    window.addEventListener('message', event => {
                         if (event.data.type === "updateContent") {
                             const { css, style, content, js } = event.data;
-                            // Update CSS
                             document.head.querySelector("style")?.remove();
                             if (css) {
                                 const styleTag = document.createElement("style");
                                 styleTag.innerHTML = css;
                                 document.head.appendChild(styleTag);
                             }
-                            // Update body content
                             document.body.innerHTML = content;
-                            // Update body style
                             document.body.style = style;
-                            // Update JS
                             const scriptTag = document.createElement("script");
                             scriptTag.innerHTML = js;
                             document.body.appendChild(scriptTag);
@@ -714,120 +679,48 @@ function popOutPreview() {
             </html>
         `);
 
-        // Send initial content to preview window
         setTimeout(() => {
-            updatePopOutWindow(allCSS, bodyStyle, bodyContent, allJS, selectedFile);
+            updatePopOutWindow(allCSS, bodyStyle, bodyContent, allJS);
         }, 100);
     }
 }
 
-document.getElementById('popOut').addEventListener('click', function () {
-    popOutPreview()
-})
+document.getElementById('popOut').addEventListener('click', popOutPreview);
 
-//Addded this function to toggle toolbox
-toolboxButton.addEventListener('click', function () {
+// -------------------- Toolbox Category Control --------------------
 
-
-    //To close fileManger when toolbox is clicked
-    if (fileManager.style.display === "block") {
-        fileManagerButton.classList.toggle('active')
-        fileManager.style.display = "none";
-    }
-
-    var toolboxDiv = document.querySelector('.blocklyToolboxDiv');
-    var flyout=document.querySelector('.blocklyFlyout');
-    var flyoutVisible=flyout.style.display === "block";
- 
-    var isVisible = window.getComputedStyle(toolboxDiv).display == 'block';
-
-    if (isVisible) {
-
-        this.classList.toggle('active');
-        toolboxDiv.style.setProperty('display', 'none', 'important');
-        if(isFlyoutOpen && flyoutVisible) {
-            flyout.style.display = "none";
-        }
-        
-        
-    }
-    else {
-        this.classList.toggle('active');
-        toolboxDiv.style.setProperty('display', 'block', 'important');
-        if(isFlyoutOpen && !flyoutVisible) {
-            flyout.style.display = "block";
-        }
-     
-        
-
-    }
-})
-// This function sets up an event listener to manage the opening/closing of categories
 function setupSingleCategoryOpen() {
-    // Listen for Blockly events on the workspace
-    workspace.addChangeListener(function (event) {
-        //console.log(event.type)
-        // Check if the event is a category open event
+    workspace.addChangeListener(event => {
         if (event.type === 'toolbox_item_select') {
-
-            //Checking if the flyOut is open
-            isFlyoutOpen=workspace.getFlyout().isVisible();
-    
-              
-            var selectedCategory = Blockly.getMainWorkspace().getToolbox().getSelectedItem();
-            var selectedCategoryName = selectedCategory.name_;
-
-       
+            isFlyoutOpen = workspace.getFlyout().isVisible();
+            const selectedCategory = Blockly.getMainWorkspace().getToolbox().getSelectedItem();
+            const selectedCategoryName = selectedCategory.name_;
             const toolbox = workspace.getToolbox();
 
             if (selectedCategory.parent_) {
+                const parentCategory = selectedCategory.parent_.name_;
+                let parentCategoryParent = '';
 
-              if (selectedCategory.parent_) {
-
-                var parentCategory = selectedCategory.parent_.name_;
-
-                var parentCategoryParent=''
-               
- 
-                // Loop through all categories to get the parent of parent category if any
                 toolbox.getToolboxItems().forEach(item => {
-                    if(item.name_ == parentCategory){
-                       parentCategoryParent=item.toolboxItemDef_.id;
-                    }    
-                    
-                });
-                //Making sure only the selected category and parent category are open
-                toolbox.getToolboxItems().forEach(item=>{
-                    if(item.name_!==selectedCategoryName && item.name_!==parentCategory && item.name_!==parentCategoryParent){
-                        if(item.expanded_){
-                            item.setExpanded(false);
-                        }
+                    if (item.name_ === parentCategory) {
+                        parentCategoryParent = item.toolboxItemDef_.id;
                     }
-                })
+                });
 
-                       
-              
-            }
-                      
-              
-            }
-            else {
-                // Loop through all categories
                 toolbox.getToolboxItems().forEach(item => {
-
-                    if (item.expanded_ && item.name_ != selectedCategoryName) {
+                    if (![selectedCategoryName, parentCategory, parentCategoryParent].includes(item.name_) && item.expanded_) {
                         item.setExpanded(false);
                     }
-
+                });
+            } else {
+                toolbox.getToolboxItems().forEach(item => {
+                    if (item.expanded_ && item.name_ !== selectedCategoryName) {
+                        item.setExpanded(false);
+                    }
                 });
             }
-
-
         }
     });
 }
 
-// Call this function after Blockly workspace has been initialized
 setupSingleCategoryOpen();
-
-

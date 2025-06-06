@@ -146,7 +146,7 @@
             />
             Export Project
           </button>
-          
+          <button id="runCode" class="toggle-btn"> <i class="fas fa-play"></i>&nbsp;Run</button>
         </div>
 
         <!-- Generated Code Section -->
@@ -397,21 +397,24 @@
 
       <category name="JavaScript" id="JavaScript">
         <!-- 1. Basic Output & Debugging -->
-        <category name="Basics" colour="#FFB400" id="JS_Basics">
+        <category name="Basics" colour="#F85E00" id="JS_Basics">
+          <label text="Basics"></label>
           <block type="js_alert"></block>
           <block type="js_console_log"></block>
           <block type="data"></block>
         </category>
 
         <!-- 2. Variables & Constants -->
-        <category name="Variables" colour="#F26B38" id="JS_Variables">
+        <category name="Variables" colour="#F85E00" id="JS_Variables">
+          <label text="Variables"></label>
           <block type="js_variable_declare"></block>
           <block type="js_const_declare"></block>
           <block type="js_let_declare"></block>
         </category>
 
         <!-- 3. Operators -->
-        <category name="Operators" colour="#D7263D" id="JS_Operators">
+        <category name="Operators" colour="#F85E00" id="JS_Operators">
+          <label text="Operators"></label>
           <block type="js_assign"></block>
           <block type="js_arithmetic"></block>
           <block type="js_logical"></block>
@@ -420,7 +423,8 @@
         </category>
 
         <!-- 4. Control Flow -->
-        <category name="Control Flow" colour="#3E92CC" id="JS_ControlFlow">
+        <category name="Control Flow" colour="#F85E00" id="JS_ControlFlow">
+          <label text="Control Flow"></label>
           <block type="js_if"></block>
           <block type="js_elif"></block>
           <block type="js_else"></block>
@@ -432,7 +436,8 @@
         </category>
 
         <!-- 5. Loops -->
-        <category name="Loops" colour="#1F7A8C" id="JS_Loops">
+        <category name="Loops" colour="#F85E00" id="JS_Loops">
+          <label text="Loops"></label>
           <block type="js_while_loop"></block>
           <block type="js_for_loop"></block>
           <block type="js_for_of_loop"></block>
@@ -440,31 +445,36 @@
         </category>
 
         <!-- 6. Functions -->
-        <category name="Functions" colour="#2EC4B6" id="JS_Functions">
+        <category name="Functions" colour="#F85E00" id="JS_Functions">
+          <label text="Functions"></label>
           <block type="js_function"></block>
           <block type="js_arrow_function"></block>
-          <block type="js_argument"></block>
           <block type="js_function_call"></block>
           <block type="js_return"></block>
         </category>
 
         <!-- 7. Events -->
-        <category name="Events" colour="#7C83FD" id="JS_Events">
+        <category name="Events" colour="#F85E00" id="JS_Events">
+          <label text="Events"></label>
           <block type="js_event_listenerDOMContentLoaded"></block>
           <block type="js_event_listener"></block>
           <block type="js_remove_event_listener"></block>
         </category>
 
         <!-- 8. Timing -->
-        <category name="Timing" colour="#FF7F11" id="JS_Timing">
-          <block type="js_set_timeout"></block>
-          <block type="js_set_interval"></block>
+        <category name="Timing" colour="#F85E00" id="JS_Timing">
+          <label text="Timing"></label>
+          <block type="js_set_timeout_1"></block>
+          <block type="js_set_timeout_2"></block>
+          <block type="js_set_interval_1"></block>
+          <block type="js_set_interval_2"></block>
           <block type="js_clear_timeout"></block>
           <block type="js_clear_interval"></block>
         </category>
 
         <!-- 9. Arrays -->
-        <category name="Arrays" colour="#9C27B0" id="JS_Arrays">
+        <category name="Arrays" colour="#F85E00" id="JS_Arrays">
+          <label text="Arrays"></label>
           <block type="js_array"></block>
           <block type="js_array_access"></block>
           <block type="js_array_length"></block>
@@ -477,7 +487,8 @@
         </category>
 
         <!-- 10. Objects -->
-        <category name="Objects" colour="#8BC34A" id="JS_Objects">
+        <category name="Objects" colour="#F85E00" id="JS_Objects">
+          <label text="Objects"></label>
           <block type="js_object_create"></block>
           <block type="js_object_access"></block>
           <block type="js_object_assign"></block>
@@ -486,13 +497,15 @@
         </category>
 
         <!-- 11. JSON -->
-        <category name="JSON" colour="#4CAF50" id="JS_JSON">
+        <category name="JSON" colour="#F85E00" id="JS_JSON">
+          <label text="JSON"></label>
           <block type="js_json_parse"></block>
           <block type="js_json_stringify"></block>
         </category>
 
         <!-- 12. DOM Manipulation -->
-        <category name="DOM" colour="#607D8B" id="JS_DOM">
+        <category name="DOM" colour="#F85E00" id="JS_DOM">
+          <label text="DOM"></label>
           <block type="js_get_element_by_id"></block>
           <block type="js_query_selector"></block>
           <block type="js_set_innerhtml"></block>
@@ -503,13 +516,15 @@
         </category>
 
         <!-- 13. Error Handling -->
-        <category name="Error Handling" colour="#E53935" id="JS_Errors">
+        <category name="Error Handling" colour="#F85E00" id="JS_Errors">
+          <label text="Error Handling"></label>
           <block type="js_try_catch"></block>
           <block type="js_throw_error"></block>
         </category>
 
         <!-- 14. Asynchronous -->
-        <category name="Async Programming" colour="#00ACC1" id="JS_Async">
+        <category name="Async Programming" colour="#F85E00" id="JS_Async">
+          <label text="Async Programming"></label>
           <block type="js_promise"></block>
           <block type="js_then"></block>
           <block type="js_catch"></block>
@@ -518,7 +533,8 @@
         </category>
 
         <!-- 15. Type Conversion -->
-        <category name="Type Conversion" colour="#6A1B9A" id="JS_Types">
+        <category name="Type Conversion" colour="#F85E00" id="JS_Types">
+          <label text="Type Conversion"></label>
           <block type="js_typeof"></block>
           <block type="js_parse_int"></block>
           <block type="js_parse_float"></block>
@@ -526,7 +542,8 @@
         </category>
 
         <!-- 16. Math Utilities -->
-        <category name="Math" colour="#9E9D24" id="JS_Math">
+        <category name="Math" colour="#F85E00" id="JS_Math">
+          <label text="Math"></label>
           <block type="js_math_random"></block>
           <block type="js_math_floor"></block>
           <block type="js_math_ceil"></block>
@@ -535,6 +552,5 @@
         </category>
       </category>
     </xml>
-    <button width="500" height="500">hello</button>
   </body>
 </html>
