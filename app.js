@@ -262,11 +262,10 @@ function generateHTMLFromBlocks(run,fileObj) {
         //console.log(selectedFile)
     }
     else{
-         
+        
         var selectedFile=fileObj
         //console.log(selectedFile)
     }
-       
         var htmlContent = selectedFile.generatedCode;
         var parser = new DOMParser();
         var doc = parser.parseFromString(htmlContent, 'text/html');
@@ -643,7 +642,7 @@ function popOutPreview() {
     if (previewWindow && !previewWindow.closed) {
         previewWindow.focus();
     } else {
-        const [allCSS, bodyStyle, bodyContent, allJS, selectedFile] = generateHTMLFromBlocks();
+        const [allCSS, bodyStyle, bodyContent, allJS, selectedFile] = generateHTMLFromBlocks(run=true);
 
         previewWindow = window.open("", "PreviewWindow", "width=800,height=600");
         previewWindow.document.write(`
