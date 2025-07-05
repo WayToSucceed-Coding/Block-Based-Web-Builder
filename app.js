@@ -28,7 +28,7 @@ var currentFileIndex = -1;
 // Object to map filenames to their content for easy access
 var userFiles = {};
 
-// Function to add a new file
+// Modified addFile function to include auto-save
 function addFile(name, type) {
     // Check if file already exists
     if (userFiles.hasOwnProperty(`${name}.${type}`)) {
@@ -49,14 +49,17 @@ function addFile(name, type) {
 
     // Add to files array and userFiles object
     files.push(fileObj);
-    userFiles[`${name}.${type}`] = ''; // Initialize empty content
+    userFiles[`${name}.${type}`] = '';
 
-    console.log('Files: ', files)
-    console.log('User Files: ', userFiles)
+    console.log('Files: ', files);
+    console.log('User Files: ', userFiles);
 
     // Render the file list and select the new file
     renderFileList();
     selectFile(files.length - 1);
+
+    // Auto-save after adding file
+    autoSave();
 }
 
 // Function to render the file list in the UI
@@ -102,7 +105,7 @@ function renderFileList() {
     });
 }
 
-// Function to select a file
+// Modified selectFile function to include auto-save
 function selectFile(index) {
     if (index < 0 || index >= files.length) return;
 
@@ -126,28 +129,27 @@ function selectFile(index) {
     if (file.xml.trim() !== '') {
         var xml = Blockly.Xml.textToDom(file.xml);
         Blockly.Xml.domToWorkspace(xml, workspace);
-        //Show xml of the selected file
-        // console.log(xml);
     }
 
     // Update the generated code textarea
     document.getElementById('generatedCode').value = file.generatedCode;
 
     // Update the active class in the file list
-    var fileListItems = document.querySelectorAll('#fileList a'); // Fix: Select the <a> items inside the #fileList
-    fileListItems.forEach(item => item.classList.remove('active')); // Remove 'active' from all
+    var fileListItems = document.querySelectorAll('#fileList a');
+    fileListItems.forEach(item => item.classList.remove('active'));
     if (fileListItems[index]) {
-        fileListItems[index].classList.add('active'); // Add 'active' to the selected file
+        fileListItems[index].classList.add('active');
     }
 
     // Update the userFiles object
     userFiles[`${file.name}.${file.type}`] = file.generatedCode;
 
-    // Update the live preview
-    //updateLivePreview();
+    // Auto-save after file selection
+    autoSave();
 }
 
-// Function to delete a file
+
+// Modified deleteFile function to include auto-save
 function deleteFile(index) {
     if (index < 0 || index >= files.length) return;
 
@@ -172,8 +174,10 @@ function deleteFile(index) {
     }
 
     renderFileList();
+    
+    // Auto-save after deleting file
+    autoSave();
 }
-
 // Handle adding a new file via the form
 document.getElementById('addFileForm').addEventListener('submit', function (e) {
     e.preventDefault();
@@ -382,6 +386,65 @@ function loadPage(page) {
 
 }
 
+// -------------------- Local Storage Functions --------------------
+
+// Function to save all data to localStorage
+function saveToLocalStorage() {
+    try {
+        const dataToSave = {
+            files: files,
+            currentFileIndex: currentFileIndex,
+            userFiles: userFiles,
+            timestamp: new Date().toISOString()
+        };
+        localStorage.setItem('blocklyEditorData', JSON.stringify(dataToSave));
+        console.log('Data saved to localStorage');
+    } catch (error) {
+        console.error('Error saving to localStorage:', error);
+    }
+}
+
+// Function to load data from localStorage
+function loadFromLocalStorage() {
+    try {
+        const savedData = localStorage.getItem('blocklyEditorData');
+        if (savedData) {
+            const parsedData = JSON.parse(savedData);
+            
+            // Restore the data
+            files = parsedData.files || [];
+            currentFileIndex = parsedData.currentFileIndex || -1;
+            userFiles = parsedData.userFiles || {};
+            
+            console.log('Data loaded from localStorage');
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.error('Error loading from localStorage:', error);
+        return false;
+    }
+}
+
+// Function to clear localStorage
+function clearLocalStorage() {
+    try {
+        localStorage.removeItem('blocklyEditorData');
+        console.log('localStorage cleared');
+    } catch (error) {
+        console.error('Error clearing localStorage:', error);
+    }
+}
+
+// Auto-save function with debouncing
+let autoSaveTimeout;
+function autoSave() {
+    clearTimeout(autoSaveTimeout);
+    autoSaveTimeout = setTimeout(() => {
+        saveToLocalStorage();
+    }, 1000); // Save after 1 second of inactivity
+}
+
 // Handle navigation messages from iframe
 window.addEventListener('message', event => {
     if (event.data.type === 'navigate' && event.data.href) {
@@ -498,14 +561,43 @@ function injectDefaultHtmlBlocks(workspace) {
         Blockly.Xml.domToWorkspace(xml, workspace);
     }
 }
-// Initialize by creating an initial HTML file when the page loads
+// Modified window load event to restore data
 window.addEventListener('load', () => {
-    createInitialHtmlFile();
-    // Optionally, create a default about.html file
-    // addFile('about', 'html');
+    // Try to load from localStorage first
+    const dataLoaded = loadFromLocalStorage();
+    
+    if (dataLoaded && files.length > 0) {
+        // Restore the UI state
+        renderFileList();
+        if (currentFileIndex >= 0 && currentFileIndex < files.length) {
+            selectFile(currentFileIndex);
+        } else if (files.length > 0) {
+            selectFile(0);
+        }
+        console.log('Restored from localStorage');
+    } else {
+        // Create initial file if no data was loaded
+        createInitialHtmlFile();
+        console.log('Created initial file');
+    }
 });
 
-// Function to generate code from the Blockly workspace and store it
+// Save data before the page unloads
+window.addEventListener('beforeunload', (event) => {
+    // Save current workspace state before leaving
+    if (currentFileIndex !== -1) {
+        var currentFile = files[currentFileIndex];
+        var xml = Blockly.Xml.workspaceToDom(workspace);
+        var xmlText = Blockly.Xml.domToText(xml);
+        currentFile.xml = xmlText;
+        currentFile.generatedCode = generateCodeForFile(currentFile);
+        userFiles[`${currentFile.name}.${currentFile.type}`] = currentFile.generatedCode;
+    }
+    
+    saveToLocalStorage();
+});
+
+// Modified updateGeneratedCode function to include auto-save
 function updateGeneratedCode() {
     if (currentFileIndex === -1) return;
 
@@ -520,13 +612,18 @@ function updateGeneratedCode() {
         code = Blockly.JavaScript.workspaceToCode(workspace);
     }
 
+    // Save current workspace XML
+    var xml = Blockly.Xml.workspaceToDom(workspace);
+    var xmlText = Blockly.Xml.domToText(xml);
+    file.xml = xmlText;
+
     file.generatedCode = code;
     userFiles[`${file.name}.${file.type}`] = code;
     document.getElementById('generatedCode').value = code;
 
-    //updateLivePreview();
+    // Auto-save when code changes
+    autoSave();
 }
-
 // Update code when blocks change
 workspace.addChangeListener(updateGeneratedCode);
 

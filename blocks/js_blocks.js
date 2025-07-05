@@ -46,6 +46,25 @@ Blockly.JavaScript['js_console_log'] = function (block) {
   return code; // Return the generated code
 };
 
+Blockly.Blocks['js_prompt'] = {
+  init: function () {
+    this.appendDummyInput()
+      .appendField("prompt(") // Label for the block
+      .appendField(new Blockly.FieldTextInput('"Type your question"'), 'TEXT') // Input for prompt text
+      .appendField(")"); // Close the prompt function call
+    this.setOutput(true);
+    this.setColour('#F85E00'); // Set block color
+
+  }
+}
+
+Blockly.JavaScript['js_prompt'] = function (block) {
+  const message = block.getFieldValue("TEXT");
+  const code = `prompt(${message})`; // ← NO semicolon or newline
+  return [code, Blockly.JavaScript.ORDER_FUNCTION_CALL]; // Return as a value
+};
+
+
 Blockly.Blocks['data'] = {
   init: function () {
     this.appendDummyInput()
