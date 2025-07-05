@@ -15,6 +15,11 @@ var workspace = Blockly.inject('blocklyDiv', {
     }
 });
 
+// Generate a unique key for this session to avoid conflicts
+const SESSION_ID = 'blockly_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+const STORAGE_KEY = 'blocklyEditorData_' + SESSION_ID;
+const FALLBACK_KEY = 'blocklyEditorData'; // Original key as fallback
+
 // Create a function to add or update the label block
 function updateFileLabelBlock(fileName) {
     document.getElementById('current-filename').textContent = fileName;
@@ -388,21 +393,55 @@ function loadPage(page) {
 
 // -------------------- Local Storage Functions --------------------
 
-// Function to save all data to localStorage
 function saveToLocalStorage() {
     try {
+        // Save current workspace state first
+        if (currentFileIndex !== -1) {
+            var currentFile = files[currentFileIndex];
+            var xml = Blockly.Xml.workspaceToDom(workspace);
+            var xmlText = Blockly.Xml.domToText(xml);
+            currentFile.xml = xmlText;
+            currentFile.generatedCode = generateCodeForFile(currentFile);
+            userFiles[`${currentFile.name}.${currentFile.type}`] = currentFile.generatedCode;
+        }
+
         const dataToSave = {
             files: files,
             currentFileIndex: currentFileIndex,
             userFiles: userFiles,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            version: '1.0' // Add version for future compatibility
         };
-        localStorage.setItem('blocklyEditorData', JSON.stringify(dataToSave));
-        console.log('Data saved to localStorage');
+
+        // Try to save with unique key first
+        const jsonString = JSON.stringify(dataToSave);
+        localStorage.setItem(STORAGE_KEY, jsonString);
+        
+        // Also save as fallback
+        localStorage.setItem(FALLBACK_KEY, jsonString);
+        
+        console.log('Data saved to localStorage with keys:', STORAGE_KEY, FALLBACK_KEY);
+        
+        // Clean up old sessions (keep only last 5)
+        cleanupOldSessions();
+        
     } catch (error) {
         console.error('Error saving to localStorage:', error);
+        
+        // If quota exceeded, try to clear some space
+        if (error.name === 'QuotaExceededError') {
+            try {
+                clearOldData();
+                // Retry saving
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+                console.log('Saved after clearing old data');
+            } catch (retryError) {
+                console.error('Failed to save even after cleanup:', retryError);
+            }
+        }
     }
 }
+
 
 // Function to load data from localStorage
 function loadFromLocalStorage() {
@@ -426,24 +465,118 @@ function loadFromLocalStorage() {
     }
 }
 
-// Function to clear localStorage
+// Function to clear old data when quota is exceeded
+function clearOldData() {
+    try {
+        // Remove all old blockly sessions except current and fallback
+        const keysToRemove = [];
+        
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.startsWith('blocklyEditorData_') && 
+                key !== STORAGE_KEY && key !== FALLBACK_KEY) {
+                keysToRemove.push(key);
+            }
+        }
+        
+        keysToRemove.forEach(key => {
+            localStorage.removeItem(key);
+            console.log('Removed old data:', key);
+        });
+        
+    } catch (error) {
+        console.error('Error clearing old data:', error);
+    }
+}
+
+// Enhanced function to clear localStorage
 function clearLocalStorage() {
     try {
-        localStorage.removeItem('blocklyEditorData');
-        console.log('localStorage cleared');
+        // Remove all blockly-related keys
+        const keysToRemove = [];
+        
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.startsWith('blocklyEditorData')) {
+                keysToRemove.push(key);
+            }
+        }
+        
+        keysToRemove.forEach(key => {
+            localStorage.removeItem(key);
+        });
+        
+        console.log('All localStorage data cleared');
     } catch (error) {
         console.error('Error clearing localStorage:', error);
     }
 }
 
-// Auto-save function with debouncing
+// Enhanced auto-save function with better debouncing
 let autoSaveTimeout;
+let lastSaveTime = 0;
+const MIN_SAVE_INTERVAL = 2000; // Minimum 2 seconds between saves
+
 function autoSave() {
+    const now = Date.now();
+    
     clearTimeout(autoSaveTimeout);
-    autoSaveTimeout = setTimeout(() => {
+    
+    // If enough time has passed since last save, save immediately
+    if (now - lastSaveTime >= MIN_SAVE_INTERVAL) {
         saveToLocalStorage();
-    }, 1000); // Save after 1 second of inactivity
+        lastSaveTime = now;
+    } else {
+        // Otherwise, debounce
+        autoSaveTimeout = setTimeout(() => {
+            saveToLocalStorage();
+            lastSaveTime = Date.now();
+        }, 1000);
+    }
 }
+// Force save function for critical moments
+function forceSave() {
+    clearTimeout(autoSaveTimeout);
+    saveToLocalStorage();
+    lastSaveTime = Date.now();
+}
+
+// Function to clear all data and reset
+function clearAllData() {
+    if (confirm('Are you sure you want to clear all files and data? This cannot be undone.')) {
+        // Clear localStorage
+        localStorage.removeItem('blocklyEditorData');
+        
+        // Clear all other blockly-related localStorage keys
+        for (let i = localStorage.length - 1; i >= 0; i--) {
+            const key = localStorage.key(i);
+            if (key && key.startsWith('blocklyEditorData')) {
+                localStorage.removeItem(key);
+            }
+        }
+        
+        // Reset all variables
+        files = [];
+        currentFileIndex = -1;
+        userFiles = {};
+        
+        // Clear workspace
+        workspace.clear();
+        
+        // Clear UI
+        document.getElementById('fileList').innerHTML = '';
+        document.getElementById('generatedCode').value = '';
+        document.getElementById('preview').srcdoc = '';
+        document.getElementById('current-filename').textContent = '';
+        
+        // Create fresh index.html file
+        createInitialHtmlFile();
+        
+        alert('All data cleared! Starting fresh with new index.html file.');
+    }
+}
+
+document.getElementById('clear').addEventListener('click', clearAllData);
 
 // Handle navigation messages from iframe
 window.addEventListener('message', event => {
