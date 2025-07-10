@@ -765,9 +765,11 @@ Blockly.Blocks['html_li'] = {
       .appendField(' '); // Placeholder for attributes
 
     this.appendDummyInput()
-      .appendField('>')
-      .appendField(new Blockly.FieldTextInput('Item'), 'CONTENT') // Direct content text input
-      .appendField('</li>');
+        .appendField('>'); // Closing tag for opening <li>
+
+    this.appendStatementInput("CONTENT")
+         .setCheck(null)
+         .appendField('');
 
     this.setPreviousStatement(true, null); // Can connect to previous blocks
     this.setNextStatement(true, null); // Can connect to next blocks
@@ -779,7 +781,7 @@ Blockly.Blocks['html_li'] = {
 
 // Generator for <li> block
 Blockly.JavaScript['html_li'] = function (block) {
-  var content = block.getFieldValue('CONTENT') || ''; // Retrieve the list item content
+  var content = Blockly.JavaScript.statementToCode(block, 'CONTENT');
 
   // Get all connected attributes, properly handling chains
   var attributes = Blockly.JavaScript.valueToCode(block, 'ATTRIBUTES', Blockly.JavaScript.ORDER_ATOMIC) || '';

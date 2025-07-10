@@ -577,11 +577,15 @@ Blockly.Blocks['css_font_family'] = {
         .setCheck(null)  // Allows any type of input
         .appendField("font-family:")
         .appendField(new Blockly.FieldDropdown([
-            ["Arial", "Arial, sans-serif"],
-            ["Verdana", "Verdana, sans-serif"],
-            ["Georgia", "Georgia, serif"],
-            ["Times New Roman", "Times New Roman, serif"],
-            ["Courier New", "Courier New, monospace"],
+            ["Arial", "Arial"],
+            ["Verdana", "Verdana"],
+            ["Georgia", "Georgia"],
+            ["Times New Roman", "Times New Roman"],
+            ["Courier New", "Courier New"],
+            ["Century Gothic", "Century Gothic"],
+            ["Tahoma", "Tahoma"],
+            ["Impact", "Impact"],
+
         ]), 'FONT_FAMILY');  // Dropdown for font-family selection
     
   
