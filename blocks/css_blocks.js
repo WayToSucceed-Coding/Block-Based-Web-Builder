@@ -586,6 +586,33 @@ Blockly.JavaScript['css_align_items'] = function(block) {
   return [code, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
+Blockly.Blocks['css_justify_content'] = {
+  init: function() {
+    this.appendValueInput('LEFT_INPUT')  // For chaining
+        .setCheck(null)
+        .appendField("justify-content:")
+        .appendField(new Blockly.FieldDropdown([
+            ["flex-start", "flex-start"],
+            ["flex-end", "flex-end"],
+            ["center", "center"],
+            ["space-between", "space-between"],
+            ["space-around", "space-around"],
+            ["space-evenly", "space-evenly"]
+        ]), "JUSTIFY_CONTENT");
+    this.setOutput(true, "String");
+    this.setColour('#A5BE00');
+    this.setTooltip("Set the justify-content property.");
+    this.setHelpUrl("");
+  }
+};
+
+Blockly.JavaScript['css_justify_content'] = function(block) {
+  var leftCode = Blockly.JavaScript.valueToCode(block, 'LEFT_INPUT', Blockly.JavaScript.ORDER_ATOMIC) || '';
+  var justifyContentValue = block.getFieldValue('JUSTIFY_CONTENT');
+  var code = `${leftCode};justify-content: ${justifyContentValue}|`;
+  return [code, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
 
 // Text Decoration Block
 Blockly.Blocks['css_text_decoration'] = {
