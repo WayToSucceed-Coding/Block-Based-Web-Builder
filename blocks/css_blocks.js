@@ -532,6 +532,60 @@ Blockly.JavaScript['css_z_index'] = function(block) {
   return [code, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
+Blockly.Blocks['css_align_self'] = {
+  init: function() {
+    this.appendValueInput('LEFT_INPUT')  // For chaining
+        .setCheck(null)
+        .appendField("align-self:")
+        .appendField(new Blockly.FieldDropdown([
+            ["auto", "auto"],
+            ["flex-start", "flex-start"],
+            ["flex-end", "flex-end"],
+            ["center", "center"],
+            ["baseline", "baseline"],
+            ["stretch", "stretch"]
+        ]), "ALIGN_SELF");
+    this.setOutput(true, "String");
+    this.setColour('#A5BE00');
+    this.setTooltip("Set the align-self property.");
+    this.setHelpUrl("");
+  }
+};
+
+Blockly.JavaScript['css_align_self'] = function(block) {
+  var leftCode = Blockly.JavaScript.valueToCode(block, 'LEFT_INPUT', Blockly.JavaScript.ORDER_ATOMIC) || '';
+  var alignSelfValue = block.getFieldValue('ALIGN_SELF');
+  var code = `${leftCode};align-self: ${alignSelfValue}|`;
+  return [code, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
+Blockly.Blocks['css_align_items'] = {
+  init: function() {
+    this.appendValueInput('LEFT_INPUT')  // For chaining
+        .setCheck(null)
+        .appendField("align-items:")
+        .appendField(new Blockly.FieldDropdown([
+            ["stretch", "stretch"],
+            ["flex-start", "flex-start"],
+            ["flex-end", "flex-end"],
+            ["center", "center"],
+            ["baseline", "baseline"]
+        ]), "ALIGN_ITEMS");
+    this.setOutput(true, "String");
+    this.setColour('#A5BE00');
+    this.setTooltip("Set the align-items property.");
+    this.setHelpUrl("");
+  }
+};
+
+
+Blockly.JavaScript['css_align_items'] = function(block) {
+  var leftCode = Blockly.JavaScript.valueToCode(block, 'LEFT_INPUT', Blockly.JavaScript.ORDER_ATOMIC) || '';
+  var alignItemsValue = block.getFieldValue('ALIGN_ITEMS');
+  var code = `${leftCode};align-items: ${alignItemsValue}|`;
+  return [code, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
 
 // Text Decoration Block
 Blockly.Blocks['css_text_decoration'] = {
